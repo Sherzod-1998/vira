@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Logger } from '@nestjs/common';
 import { OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'ws';
 import * as WebSocket from 'ws';
-import { AuthService } from '../components/auth/auth.service';
 import { Member } from '../libs/dto/member/member';
 import * as url from 'url';
+import { AuthService } from '../components/auth/auth.service';
 
 interface MessagePayload {
 	event: string;

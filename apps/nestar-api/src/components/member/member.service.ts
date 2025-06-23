@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Member, Members } from '../../libs/dto/member/member';
-import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
+import { SellersInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
 import { Direction, Message } from '../../libs/enums/common.enum';
-import { AuthService } from '../auth/auth.service';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
@@ -15,6 +15,7 @@ import { LikeService } from '../like/like.service';
 import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 import { lookupAuthMemberLiked } from '../../libs/config';
 import { MemberStatus, MemberType } from '../../schemas/member.enum';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class MemberService {
@@ -115,9 +116,9 @@ export class MemberService {
 		return result ? [{ followerId: followerId, followingId: followingId, myFollowing: true }] : [];
 	}
 
-	public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
+	public async getSellers(memberId: ObjectId, input: SellersInquiry): Promise<Members> {
 		const { text } = input.search;
-		const match: T = { memberType: MemberType.AGENT, memberStatus: MemberStatus.ACTIVE };
+		const match: T = { memberType: MemberType.SELLER, memberStatus: MemberStatus.ACTIVE };
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
 		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };

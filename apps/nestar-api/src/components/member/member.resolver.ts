@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
 import { MemberService } from './member.service';
-import { InternalServerErrorException, UseGuards } from '@nestjs/common';
-import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
+import { UseGuards } from '@nestjs/common';
+import { SellersInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
 import { Member, Members } from '../../libs/dto/member/member';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
@@ -51,7 +52,7 @@ export class MemberResolver {
 		console.log('memberNick:', memberNick);
 		return `Hi ${memberNick}`;
 	}
-	@Roles(MemberType.USER, MemberType.AGENT)
+	@Roles(MemberType.USER, MemberType.SELLER)
 	@UseGuards(RolesGuard)
 	@Query(() => String)
 	public async checkAuthRoles(@AuthMember() authMember: Member): Promise<string> {
@@ -72,12 +73,12 @@ export class MemberResolver {
 
 	@UseGuards(WithoutGuard)
 	@Query(() => Members)
-	public async getAgents(
-		@Args('input') input: AgentsInquiry,
+	public async getSellers(
+		@Args('input') input:SellersInquiry,
 		@AuthMember('_id') memberId: ObjectId, //
 	): Promise<Members> {
-		console.log('Query: getAgents');
-		return await this.memberService.getAgents(memberId, input);
+		console.log('Query: getSellers');
+		return await this.memberService.getSellers(memberId, input);
 	}
 
 	@UseGuards(AuthGuard)
@@ -148,7 +149,7 @@ export class MemberResolver {
 	public async imagesUploader(
 		@Args('files', { type: () => [GraphQLUpload] })
 		files: Promise<FileUpload>[],
-		@Args('target') target: String,
+		@Args('target') target: string,
 	): Promise<string[]> {
 		console.log('Mutation: imagesUploader');
 

@@ -1,64 +1,64 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { ProductLocation, ProductStatus, ProductType } from '../../enums/product.enum';
 import { Member, TotalCounter } from '../member/member';
 import { MeLiked } from '../like/like';
 
 @ObjectType()
-export class Property {
+export class Product {
 	@Field(() => String)
 	_id: ObjectId;
 
-	@Field(() => PropertyType)
-	propertyType: PropertyType;
+	@Field(() => ProductType)
+	productType: ProductType;
 
-	@Field(() => PropertyStatus)
-	propertyStatus: PropertyStatus;
+	@Field(() => ProductStatus)
+	productStatus: ProductStatus;
 
-	@Field(() => PropertyLocation)
-	propertyLocation: PropertyLocation;
-
-	@Field(() => String)
-	propertyAddress: string;
+	@Field(() => ProductLocation)
+	productLocation: ProductLocation;
 
 	@Field(() => String)
-	propertyTitle: string;
+	productAddress: string;
+
+	@Field(() => String)
+	productTitle: string;
 
 	@Field(() => Number)
-	propertyPrice: number;
+	productPrice: number;
 
 	@Field(() => Number)
-	propertySquare: number;
+	productSquare: number;
 
 	@Field(() => Int)
-	propertyBeds: number;
+	productBeds: number;
 
 	@Field(() => Int)
-	propertyRooms: number;
+	productRooms: number;
 
 	@Field(() => Int)
-	propertyViews: number;
+	productViews: number;
 
 	@Field(() => Int)
-	propertyLikes: number;
+	productLikes: number;
 
 	@Field(() => Int)
-	propertyComments: number;
+	productComments: number;
 
 	@Field(() => Int)
-	propertyRank: number;
+	productRank: number;
 
 	@Field(() => [String])
-	propertyImages: string[];
+	productImages: string[];
 
 	@Field(() => String, { nullable: true })
-	propertyDesc?: string;
+	productDesc?: string;
 
 	@Field(() => Boolean)
-	propertyBarter: boolean;
+	productBarter: boolean;
 
 	@Field(() => Boolean)
-	propertyRent: boolean;
+	productRent: boolean;
 
 	@Field(() => String)
 	memberId: ObjectId;
@@ -88,9 +88,9 @@ export class Property {
 }
 
 @ObjectType()
-export class Properties {
-	@Field(() => [Property])
-	list: Property[];
+export class Products {
+	@Field(() => [Product])
+	list: Product[];
 
 	@Field(() => [TotalCounter], { nullable: true })
 	metaCounter: TotalCounter[];

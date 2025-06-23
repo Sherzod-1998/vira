@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
@@ -5,8 +6,8 @@ import { Like, MeLiked } from '../../libs/dto/like/like';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { T } from '../../libs/types/common';
 import { Message } from '../../libs/enums/common.enum';
-import { OrdinaryInquiry } from '../../libs/dto/property/property.input';
-import { Properties } from '../../libs/dto/property/property';
+import { OrdinaryInquiry } from '../../libs/dto/product/product.input';
+import { Products } from '../../libs/dto/product/product';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { log } from 'console';
 import { lookupFavorite } from '../../libs/config';
@@ -42,9 +43,9 @@ export class LikeService {
 		return result ? [{ memberId: memberId, likeRefId: likeRefId, myFavorite: true }] : [];
 	}
 
-	public async getFavoriteProperties(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+	public async getFavoriteProducts(memberId: ObjectId, input: OrdinaryInquiry): Promise<Products> {
 		const { page, limit } = input;
-		const match: T = { likeGroup: LikeGroup.PROPERTY, memberId: memberId };
+		const match: T = { likeGroup: LikeGroup.PRODUCT, memberId: memberId };
 
 		const data: T = await this.likeModel
 			.aggregate([
@@ -52,20 +53,20 @@ export class LikeService {
 				{ $sort: { updatedAt: -1 } },
 				{
 					$lookup: {
-						from: 'properties',
+						from: 'products',
 						localField: 'likeRefId',
 						foreignField: '_id',
-						as: 'favoriteProperty',
+						as: 'favoriteProduct',
 					},
 				},
-				{ $unwind: '$favoriteProperty' },
+				{ $unwind: '$favoriteProduct' },
 				{
 					$facet: {
 						list: [
 							{ $skip: (page - 1) * limit },
 							{ $limit: limit },
 							lookupFavorite,
-							{ $unwind: '$favoriteProperty.memberData' },
+							{ $unwind: '$favoriteProduct.memberData' },
 						],
 						metaCounter: [{ $count: 'total' }],
 					},
@@ -74,8 +75,8 @@ export class LikeService {
 			.exec();
 
 		// console.log('data:', data);
-		const result: Properties = { list: [], metaCounter: data[0].metaCounter };
-		result.list = data[0].list.map((ele) => ele.favoriteProperty);
+		const result: Products = { list: [], metaCounter: data[0].metaCounter };
+		result.list = data[0].list.map((ele) => ele.favoriteProduct);
 
 		// console.log('result:', result);
 		return result;

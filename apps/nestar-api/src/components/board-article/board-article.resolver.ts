@@ -38,7 +38,7 @@ export class BoardArticleResolver {
 		@Args('articleId') input: string,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticle> {
-		console.log('Query: getProperty');
+		console.log('Query: getProduct');
 		const articleId = shapeIntoMongoObjectId(input);
 		return await this.boardArticleService.getBoardArticle(memberId, articleId);
 	}
