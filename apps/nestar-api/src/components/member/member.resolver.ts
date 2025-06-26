@@ -74,7 +74,7 @@ export class MemberResolver {
 	@UseGuards(WithoutGuard)
 	@Query(() => Members)
 	public async getSellers(
-		@Args('input') input:SellersInquiry,
+		@Args('input') input: SellersInquiry,
 		@AuthMember('_id') memberId: ObjectId, //
 	): Promise<Members> {
 		console.log('Query: getSellers');
