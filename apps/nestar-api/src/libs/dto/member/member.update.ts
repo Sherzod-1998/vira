@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { MemberType, MemberStatus } from 'apps/nestar-api/src/schemas/member.enum';
-import { IsNotEmpty, IsOptional, Length } from 'class-validator';
+import { IsOptional, Length } from 'class-validator';
 
 import { ObjectId } from 'mongoose';
 
