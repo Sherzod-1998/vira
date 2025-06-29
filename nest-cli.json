@@ -1,31 +1,31 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/nestar-api/src",
+  "sourceRoot": "apps/jewelry-api/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/nestar-api/tsconfig.app.json"
+    "tsConfigPath": "apps/jewelry-api/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/nestar-api",
+  "root": "apps/jewelry-api",
   "projects": {
-    "nestar-api": {
+    "jewelry-api": {
       "type": "application",
-      "root": "apps/nestar",
+      "root": "apps/jewelry-api", 
       "entryFile": "main",
-      "sourceRoot": "apps/nestar-api/src",
+      "sourceRoot": "apps/jewelry-api/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/nestar-api/tsconfig.app.json"
+        "tsConfigPath": "apps/jewelry-api/tsconfig.app.json"
       }
     },
-    "nestar-batch": {
+    "jewelry-batch": {
       "type": "application",
-      "root": "apps/nestar-batch",
+      "root": "apps/jewelry-batch",
       "entryFile": "main",
-      "sourceRoot": "apps/nestar-batch/src",
+      "sourceRoot": "apps/jewelry-batch/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/nestar-batch/tsconfig.app.json"
+        "tsConfigPath": "apps/jewelry-batch/tsconfig.app.json"
       }
     }
   }

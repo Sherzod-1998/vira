@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
+
 import { BatchModule } from '../src/batch.module';
 
-describe('NestarBatchController (e2e)', () => {
+describe('JewelryBatchController (e2e)', () => {
 	let app: INestApplication;
 
 	beforeEach(async () => {
