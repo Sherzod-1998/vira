@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { ProductLocation, ProductStatus, ProductType } from '../../enums/product.enum';
+import { ProductLocation, ProductMaterial, ProductStatus, ProductType } from '../../enums/product.enum';
 import { Member, TotalCounter } from '../member/member';
 import { MeLiked } from '../like/like';
 
@@ -27,14 +27,8 @@ export class Product {
 	@Field(() => Number)
 	productPrice: number;
 
-	@Field(() => Number)
-	productSquare: number;
-
-	@Field(() => Int)
-	productBeds: number;
-
-	@Field(() => Int)
-	productRooms: number;
+	@Field(() => ProductMaterial)
+	productMaterial: ProductMaterial;
 
 	@Field(() => Int)
 	productViews: number;
@@ -54,12 +48,6 @@ export class Product {
 	@Field(() => String, { nullable: true })
 	productDesc?: string;
 
-	@Field(() => Boolean)
-	productBarter: boolean;
-
-	@Field(() => Boolean)
-	productRent: boolean;
-
 	@Field(() => String)
 	memberId: ObjectId;
 
@@ -68,9 +56,6 @@ export class Product {
 
 	@Field(() => Date, { nullable: true })
 	deletedAt?: Date;
-
-	@Field(() => Date, { nullable: true })
-	constructedAt?: Date;
 
 	@Field(() => Date)
 	createdAt: Date;

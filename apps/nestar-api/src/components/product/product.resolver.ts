@@ -18,7 +18,7 @@ import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { ProductUpdate } from '../../libs/dto/product/product.update';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { MemberAuthType, MemberType } from '../../schemas/member.enum';
+import { MemberAuthType, MemberType } from '../../libs/enums/member.enum';
 
 @Resolver()
 export class ProductResolver {
@@ -30,7 +30,7 @@ export class ProductResolver {
 	public async createProduct(
 		@Args('input') input: ProductInput,
 		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Product> {
+	): Promise<Product> { 
 		console.log('Mutation: createProduct');
 		input.memberId = memberId;
 

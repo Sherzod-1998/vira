@@ -16,7 +16,7 @@ import { shapeIntoMongoObjectId } from '../../libs/config';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { MemberType } from '../../schemas/member.enum';
+import { MemberType } from '../../libs/enums/member.enum';
 
 @Resolver()
 export class BoardArticleResolver {

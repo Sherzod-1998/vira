@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
-import { ProductLocation, ProductStatus, ProductType } from '../../enums/product.enum';
+import { IsIn, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import { ProductLocation, ProductMaterial, ProductStatus, ProductType } from '../../enums/product.enum';
 import { ObjectId } from 'mongoose';
 import { Direction } from '../../enums/common.enum';
 import { availableOptions, availableProductSorts } from '../../config';
@@ -30,20 +30,8 @@ export class ProductInput {
 	productPrice: number;
 
 	@IsNotEmpty()
-	@Field(() => Number)
-	productSquare: number;
-
-	@IsNotEmpty()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int)
-	productBeds: number;
-
-	@IsNotEmpty()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int)
-	productRooms: number;
+	@Field(() => ProductMaterial)
+	productMaterial: ProductMaterial;
 
 	@IsNotEmpty()
 	@Field(() => [String])
@@ -54,19 +42,7 @@ export class ProductInput {
 	@Field(() => String, { nullable: true })
 	productDesc?: string;
 
-	@IsOptional()
-	@Field(() => Boolean, { nullable: true })
-	productBarter?: boolean;
-
-	@IsOptional()
-	@Field(() => Boolean, { nullable: true })
-	productRent?: boolean;
-
 	memberId?: ObjectId;
-
-	@IsOptional()
-	@Field(() => Date, { nullable: true })
-	constructedAt?: Date;
 }
 
 @InputType()

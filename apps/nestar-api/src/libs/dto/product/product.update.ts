@@ -1,6 +1,6 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
-import { ProductLocation, ProductStatus, ProductType } from '../../enums/product.enum';
+import { Field, InputType } from '@nestjs/graphql';
+import { IsNotEmpty, IsOptional, Length } from 'class-validator';
+import { ProductLocation, ProductMaterial, ProductStatus, ProductType } from '../../enums/product.enum';
 import { ObjectId } from 'mongoose';
 
 @InputType()
@@ -36,20 +36,8 @@ export class ProductUpdate {
 	productPrice?: number;
 
 	@IsOptional()
-	@Field(() => Number, { nullable: true })
-	productSquare?: number;
-
-	@IsOptional()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int, { nullable: true })
-	productBeds?: number;
-
-	@IsOptional()
-	@IsInt()
-	@Min(1)
-	@Field(() => Int, { nullable: true })
-	productRooms?: number;
+	@Field(() => ProductMaterial, { nullable: true })
+	productMaterial?: ProductMaterial;
 
 	@IsOptional()
 	@Field(() => [String], { nullable: true })
@@ -60,19 +48,7 @@ export class ProductUpdate {
 	@Field(() => String, { nullable: true })
 	productDesc?: string;
 
-	@IsOptional()
-	@Field(() => Boolean, { nullable: true })
-	productBarter?: boolean;
-
-	@IsOptional()
-	@Field(() => Boolean, { nullable: true })
-	productRent?: boolean;
-
 	soldAt?: Date;
 
 	deletedAt?: Date;
-
-	@IsOptional()
-	@Field(() => Date, { nullable: true })
-	constructedAt?: Date;
 }

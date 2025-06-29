@@ -11,7 +11,7 @@ import { shapeIntoMongoObjectId } from '../../libs/config';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { MemberType } from '../../schemas/member.enum';
+import { MemberType } from '../../libs/enums/member.enum';
 
 @Resolver()
 export class CommentResolver {
