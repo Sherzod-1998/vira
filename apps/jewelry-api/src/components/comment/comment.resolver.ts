@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CommentService } from './comment.service';
 import { UseGuards } from '@nestjs/common';
@@ -35,7 +36,7 @@ export class CommentResolver {
 	): Promise<Comment> {
 		console.log('Mutation: updateComment');
 		input._id = shapeIntoMongoObjectId(input._id);
-		return await this, this.commentService.updateComment(memberId, input);
+		return (await this, this.commentService.updateComment(memberId, input));
 	}
 
 	@UseGuards(WithoutGuard)
