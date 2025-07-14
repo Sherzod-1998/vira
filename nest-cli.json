@@ -1,31 +1,31 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/jewelry-api/src",
+  "sourceRoot": "apps/vira-api/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/jewelry-api/tsconfig.app.json"
+    "tsConfigPath": "apps/vira-api/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/jewelry-api",
+  "root": "apps/vira-api",
   "projects": {
-    "jewelry-api": {
+    "vira-api": {
       "type": "application",
-      "root": "apps/jewelry-api", 
+      "root": "apps/vira-api", 
       "entryFile": "main",
-      "sourceRoot": "apps/jewelry-api/src",
+      "sourceRoot": "apps/vira-api/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/jewelry-api/tsconfig.app.json"
+        "tsConfigPath": "apps/vira-api/tsconfig.app.json"
       }
     },
-    "jewelry-batch": {
+    "vira-batch": {
       "type": "application",
-      "root": "apps/jewelry-batch",
+      "root": "apps/vira-batch",
       "entryFile": "main",
-      "sourceRoot": "apps/jewelry-batch/src",
+      "sourceRoot": "apps/vira-batch/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/jewelry-batch/tsconfig.app.json"
+        "tsConfigPath": "apps/vira-batch/tsconfig.app.json"
       }
     }
   }

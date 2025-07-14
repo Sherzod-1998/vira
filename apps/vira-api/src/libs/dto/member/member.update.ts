@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { MemberType, MemberStatus } from 'apps/jewelry-api/src/libs/enums/member.enum';
+import { MemberType, MemberStatus } from 'apps/vira-api/src/libs/enums/member.enum';
 import { IsOptional, Length } from 'class-validator';
 
 import { ObjectId } from 'mongoose';

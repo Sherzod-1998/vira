@@ -2,7 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { MeLiked } from '../like/like';
 import { MeFollowed } from '../follow/follow';
-import { MemberType, MemberStatus, MemberAuthType } from 'apps/jewelry-api/src/libs/enums/member.enum';
+import { MemberType, MemberStatus, MemberAuthType } from 'apps/vira-api/src/libs/enums/member.enum';
 
 @ObjectType()
 export class Member {

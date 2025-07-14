@@ -5,8 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MongooseModule } from '@nestjs/mongoose';
-import ProductSchema from 'apps/jewelry-api/src/schemas/Product.model';
-import MemberSchema from 'apps/jewelry-api/src/schemas/Member.model';
+import ProductSchema from 'apps/vira-api/src/schemas/Product.model';
+import MemberSchema from 'apps/vira-api/src/schemas/Member.model';
 
 @Module({
 	imports: [

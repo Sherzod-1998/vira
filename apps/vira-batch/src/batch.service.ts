@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Member } from 'apps/jewelry-api/src/libs/dto/member/member';
-import { Product } from 'apps/jewelry-api/src/libs/dto/product/product';
-import { ProductStatus } from 'apps/jewelry-api/src/libs/enums/product.enum';
-import { MemberStatus, MemberType } from 'apps/jewelry-api/src/libs/enums/member.enum';
+import { Member } from 'apps/vira-api/src/libs/dto/member/member';
+import { Product } from 'apps/vira-api/src/libs/dto/product/product';
+import { ProductStatus } from 'apps/vira-api/src/libs/enums/product.enum';
+import { MemberStatus, MemberType } from 'apps/vira-api/src/libs/enums/member.enum';
 import { Model } from 'mongoose';
 
 @Injectable()
@@ -67,6 +67,6 @@ export class BatchService {
 	}
 
 	public getHello(): string {
-		return 'Welcome to Jewelry BATCH Server!';
+		return 'Welcome to Vira BATCH Server!';
 	}
 }

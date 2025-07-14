@@ -2,7 +2,7 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsIn, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
 import { availableSellerSorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
-import { MemberType, MemberAuthType, MemberStatus } from 'apps/jewelry-api/src/libs/enums/member.enum';
+import { MemberType, MemberAuthType, MemberStatus } from 'apps/vira-api/src/libs/enums/member.enum';
 
 @InputType()
 export class MemberInput {

@@ -4,7 +4,7 @@ import request from 'supertest';
 
 import { BatchModule } from '../src/batch.module';
 
-describe('JewelryBatchController (e2e)', () => {
+describe('ViraBatchController (e2e)', () => {
 	let app: INestApplication;
 
 	beforeEach(async () => {
