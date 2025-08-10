@@ -87,14 +87,6 @@ export class PISearch {
 	typeList?: ProductType[];
 
 	@IsOptional()
-	@Field(() => [Int], { nullable: true })
-	roomsList?: number[];
-
-	@IsOptional()
-	@Field(() => [Int], { nullable: true })
-	bedsList?: number[];
-
-	@IsOptional()
 	@IsIn(availableOptions, { each: true })
 	@Field(() => [String], { nullable: true })
 	options?: string[];
@@ -102,14 +94,6 @@ export class PISearch {
 	@IsOptional()
 	@Field(() => PricesRange, { nullable: true })
 	pricesRange?: PricesRange;
-
-	@IsOptional()
-	@Field(() => PeriodsRange, { nullable: true })
-	periodsRange?: PeriodsRange;
-
-	@IsOptional()
-	@Field(() => SquaresRange, { nullable: true })
-	squaresRange?: SquaresRange;
 
 	@IsOptional()
 	@Field(() => String, { nullable: true })
