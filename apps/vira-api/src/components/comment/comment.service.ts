@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, PipelineStage } from 'mongoose';
 import { MemberService } from '../member/member.service';
 import { ProductService } from '../product/product.service';
 import { BoardArticleService } from '../board-article/board-article.service';
@@ -11,11 +11,13 @@ import { Comment, Comments } from '../../libs/dto/comment/comment';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { T } from '../../libs/types/common';
 import { lookupMember } from '../../libs/config';
+import { Member } from '../../libs/dto/member/member';
 
 @Injectable()
 export class CommentService {
 	constructor(
 		@InjectModel('Comment') private readonly commentModel: Model<Comment>,
+		@InjectModel('Member') private readonly memberModel: Model<Member>,
 		private readonly memberService: MemberService,
 		private readonly productService: ProductService,
 		private readonly boardArticleService: BoardArticleService,
@@ -111,5 +113,57 @@ export class CommentService {
 		const result = await this.commentModel.findByIdAndDelete(input).exec();
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 		return result;
+	}
+	async getCommentsSummary(): Promise<{
+		total: number;
+		recentCommenters: { id: string; avatarUrl?: string }[];
+	}> {
+		const total = await this.commentModel.countDocuments({ commentStatus: CommentStatus.ACTIVE });
+
+		const pipeline: PipelineStage[] = [
+			{ $match: { commentStatus: CommentStatus.ACTIVE } },
+			{ $sort: { createdAt: -1 } },
+			{
+				$group: {
+					_id: '$memberId',
+					lastCommentAt: { $first: '$createdAt' },
+				},
+			},
+			// members bilan join
+			{
+				$lookup: {
+					from: 'members',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'member',
+				},
+			},
+			// ⬇️ Shu yerda unwind va preserveNullAndEmptyArrays: false
+			{
+				$unwind: {
+					path: '$member',
+					preserveNullAndEmptyArrays: false, // memberi yo‘q bo‘lganlar tashlab yuboriladi
+				},
+			},
+			// endi vaqt bo‘yicha again sort va limit
+			{ $sort: { lastCommentAt: -1 } },
+			{ $limit: 3 },
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					avatarUrl: {
+						$cond: [{ $eq: ['$member.memberImage', ''] }, 'uploads/member/default-avatar.jpg', '$member.memberImage'],
+					},
+				},
+			},
+		];
+
+		const recentCommenters = await this.commentModel.aggregate<{
+			id: string;
+			avatarUrl?: string;
+		}>(pipeline);
+
+		return { total, recentCommenters };
 	}
 }

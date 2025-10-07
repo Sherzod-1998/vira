@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module';
 import { ProductModule } from '../product/product.module';
 import { BoardArticleModule } from '../board-article/board-article.module';
+import MemberSchema from '../../schemas/Member.model';
 
 @Module({
 	imports: [
@@ -15,6 +16,7 @@ import { BoardArticleModule } from '../board-article/board-article.module';
 				name: 'Comment',
 				schema: CommentSchema,
 			},
+			{ name: 'Member', schema: MemberSchema },
 		]),
 		AuthModule,
 		MemberModule,

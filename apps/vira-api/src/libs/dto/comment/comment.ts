@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { CommentGroup, CommentStatus } from '../../enums/comment.enum';
 import { Member, TotalCounter } from '../member/member';
@@ -42,4 +42,22 @@ export class Comments {
 
 	@Field(() => [TotalCounter], { nullable: true })
 	metaCounter: TotalCounter[];
+}
+
+@ObjectType()
+export class Commenter {
+	@Field(() => ID)
+	id: string;
+
+	@Field({ nullable: true })
+	avatarUrl?: string;
+}
+
+@ObjectType()
+export class CommentsSummary {
+	@Field()
+	total: number;
+
+	@Field(() => [Commenter])
+	recentCommenters: Commenter[];
 }

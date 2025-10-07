@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Products, Product } from '../../libs/dto/product/product';
+import { Products, Product, ProductCategoryCount } from '../../libs/dto/product/product';
 import {
 	SellerProductsInquiry,
 	AllProductsInquiry,
 	OrdinaryInquiry,
 	ProductsInquiry,
 	ProductInput,
+	ProductCategoryCountInput,
 } from '../../libs/dto/product/product.input';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
@@ -22,7 +23,7 @@ import { MemberAuthType, MemberType } from '../../libs/enums/member.enum';
 
 @Resolver()
 export class ProductResolver {
-	constructor(private readonly productService: ProductService) {}
+	constructor(private readonly productService: ProductService) { }
 
 	@Roles(MemberType.SELLER)
 	@UseGuards(RolesGuard)
@@ -30,7 +31,7 @@ export class ProductResolver {
 	public async createProduct(
 		@Args('input') input: ProductInput,
 		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Product> { 
+	): Promise<Product> {
 		console.log('Mutation: createProduct');
 		input.memberId = memberId;
 
@@ -107,6 +108,13 @@ export class ProductResolver {
 		console.log('Mutation: likeTargetProduct');
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.productService.likeTargetProduct(memberId, likeRefId);
+	}
+
+	@Query(() => [ProductCategoryCount], { name: 'categoryCounts' })
+	async categoryCounts(
+		@Args('input', { nullable: true }) input?: ProductCategoryCountInput,
+	): Promise<ProductCategoryCount[]> {
+		return this.productService.getCategoryCounts(input);
 	}
 
 	/** ADMIN */

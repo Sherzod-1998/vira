@@ -6,7 +6,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { CommentInput, CommentsInquiry } from '../../libs/dto/comment/comment.input';
 import { ObjectId } from 'mongoose';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
-import { Comment, Comments } from '../../libs/dto/comment/comment';
+import { Comment, Comments, CommentsSummary } from '../../libs/dto/comment/comment';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { WithoutGuard } from '../auth/guards/without.guard';
@@ -48,6 +48,12 @@ export class CommentResolver {
 		console.log('Query: getComments');
 		input.search.commentRefId = shapeIntoMongoObjectId(input.search.commentRefId);
 		return await this.commentService.getComments(memberId, input);
+	}
+
+	@UseGuards(WithoutGuard)
+	@Query(() => CommentsSummary)
+	async commentsSummary(): Promise<CommentsSummary> {
+		return this.commentService.getCommentsSummary();
 	}
 
 	/** ADMIN **/

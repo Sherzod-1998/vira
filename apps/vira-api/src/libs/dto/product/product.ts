@@ -80,3 +80,12 @@ export class Products {
 	@Field(() => [TotalCounter], { nullable: true })
 	metaCounter: TotalCounter[];
 }
+
+@ObjectType()
+export class ProductCategoryCount {
+	@Field(() => ProductType)
+	type: ProductType;
+
+	@Field(() => Int)
+	count: number;
+}

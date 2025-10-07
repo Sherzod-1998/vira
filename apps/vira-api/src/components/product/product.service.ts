@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
-import { Products, Product } from '../../libs/dto/product/product';
+import { Model, ObjectId, PipelineStage } from 'mongoose';
+import { Products, Product, ProductCategoryCount } from '../../libs/dto/product/product';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import {
 	SellerProductsInquiry,
@@ -10,6 +10,7 @@ import {
 	OrdinaryInquiry,
 	ProductsInquiry,
 	ProductInput,
+	ProductCategoryCountInput,
 } from '../../libs/dto/product/product.input';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
@@ -185,6 +186,27 @@ export class ProductService {
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		return result[0];
+	}
+
+	async getCategoryCounts(input?: ProductCategoryCountInput): Promise<ProductCategoryCount[]> {
+		// DB maydon: productType   (emas: type)
+		const match: Record<string, any> = {
+			productStatus: 'ACTIVE', // xohlasangiz olib tashlashingiz mumkin
+			productType: { $exists: true, $ne: null },
+		};
+
+		if (input?.types?.length) {
+			match.productType = { $in: input.types }; // enum ro‘yxati bilan filtr
+		}
+
+		const pipeline: PipelineStage[] = [
+			{ $match: match },
+			{ $group: { _id: '$productType', count: { $sum: 1 } } }, // 🔁 shu yer o‘zgardi
+			{ $project: { _id: 0, type: '$_id', count: 1 } },
+			{ $sort: { type: 1 } },
+		];
+
+		return this.productModel.aggregate(pipeline);
 	}
 
 	public async likeTargetProduct(memberId: ObjectId, likeRefId: ObjectId): Promise<Product> {

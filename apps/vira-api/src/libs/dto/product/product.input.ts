@@ -208,3 +208,9 @@ export class OrdinaryInquiry {
 	@Field(() => Int)
 	limit: number;
 }
+
+@InputType()
+export class ProductCategoryCountInput {
+	@Field(() => [ProductType], { nullable: true })
+	types?: ProductType[];
+}
