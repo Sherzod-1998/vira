@@ -86,6 +86,11 @@ export class PISearch {
 	@Field(() => [ProductType], { nullable: true })
 	typeList?: ProductType[];
 
+	// 🔥 YANGI QISM: foydalanuvchi material bo‘yicha filter qilishi uchun
+	@IsOptional()
+	@Field(() => [ProductMaterial], { nullable: true })
+	materialList?: ProductMaterial[];
+
 	@IsOptional()
 	@IsIn(availableOptions, { each: true })
 	@Field(() => [String], { nullable: true })
@@ -98,6 +103,7 @@ export class PISearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
 	text?: string;
+
 }
 
 @InputType()

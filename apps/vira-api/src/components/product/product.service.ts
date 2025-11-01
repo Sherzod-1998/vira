@@ -135,12 +135,41 @@ export class ProductService {
 	}
 
 	private shapeMatchQuery(match: T, input: ProductsInquiry): void {
-		const { memberId, locationList, typeList, pricesRange, options, text } = input.search;
-		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-		if (locationList && locationList.length) match.productLocation = { $in: locationList };
-		if (typeList && typeList.length) match.productType = { $in: typeList };
-		if (pricesRange) match.productPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
-		if (text) match.productTitle = { $regex: new RegExp(text, 'i') };
+		const {
+			memberId,
+			locationList,
+			typeList,
+			materialList, // 🔥 YANGI
+			pricesRange,
+			options,
+			text,
+		} = input.search;
+
+		if (memberId) {
+			match.memberId = shapeIntoMongoObjectId(memberId);
+		}
+
+		if (locationList && locationList.length) {
+			match.productLocation = { $in: locationList };
+		}
+
+		if (typeList && typeList.length) {
+			match.productType = { $in: typeList };
+		}
+
+		// 🔥 YANGI: material filter
+		if (materialList && materialList.length) {
+			match.productMaterial = { $in: materialList };
+		}
+
+		if (pricesRange) {
+			match.productPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
+		}
+
+		if (text) {
+			match.productTitle = { $regex: new RegExp(text, 'i') };
+		}
+
 		if (options) {
 			match['$or'] = options.map((ele) => {
 				return { [ele]: true };
@@ -189,19 +218,18 @@ export class ProductService {
 	}
 
 	async getCategoryCounts(input?: ProductCategoryCountInput): Promise<ProductCategoryCount[]> {
-		// DB maydon: productType   (emas: type)
 		const match: Record<string, any> = {
-			productStatus: 'ACTIVE', // xohlasangiz olib tashlashingiz mumkin
+			productStatus: 'ACTIVE',
 			productType: { $exists: true, $ne: null },
 		};
 
 		if (input?.types?.length) {
-			match.productType = { $in: input.types }; // enum ro‘yxati bilan filtr
+			match.productType = { $in: input.types };
 		}
 
 		const pipeline: PipelineStage[] = [
 			{ $match: match },
-			{ $group: { _id: '$productType', count: { $sum: 1 } } }, // 🔁 shu yer o‘zgardi
+			{ $group: { _id: '$productType', count: { $sum: 1 } } },
 			{ $project: { _id: 0, type: '$_id', count: 1 } },
 			{ $sort: { type: 1 } },
 		];
