@@ -17,3 +17,12 @@ export enum NoticeStatus {
 registerEnumType(NoticeStatus, {
 	name: 'NoticeStatus',
 });
+
+export enum CsStatus {
+	PENDING = 'PENDING',
+	ANSWERED = 'ANSWERED',
+	CLOSED = 'CLOSED',
+}
+registerEnumType(CsStatus, {
+	name: 'CsStatus',
+});
