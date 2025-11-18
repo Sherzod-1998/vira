@@ -135,15 +135,7 @@ export class ProductService {
 	}
 
 	private shapeMatchQuery(match: T, input: ProductsInquiry): void {
-		const {
-			memberId,
-			locationList,
-			typeList,
-			materialList, // 🔥 YANGI
-			pricesRange,
-			options,
-			text,
-		} = input.search;
+		const { memberId, locationList, typeList, materialList, pricesRange, options, text } = input.search;
 
 		if (memberId) {
 			match.memberId = shapeIntoMongoObjectId(memberId);
@@ -157,7 +149,6 @@ export class ProductService {
 			match.productType = { $in: typeList };
 		}
 
-		// 🔥 YANGI: material filter
 		if (materialList && materialList.length) {
 			match.productMaterial = { $in: materialList };
 		}
