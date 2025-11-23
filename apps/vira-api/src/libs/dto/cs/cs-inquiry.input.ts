@@ -1,6 +1,6 @@
 // libs/dto/cs/cs-inquiry.input.ts
 import { Field, ID, InputType, Int } from '@nestjs/graphql';
-import { CsStatus } from '../../enums/notice.enum';
+import { CsStatus } from '../../enums/cs.enum';
 
 @InputType()
 export class CreateCsInquiryInput {

@@ -1,0 +1,95 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { NoticesInquiry, CreateNoticeInput } from '../../libs/dto/notice/notice.input';
+import { NoticeStatus } from '../../libs/enums/notice.enum';
+import { Notice } from '../../libs/dto/notice/notice';
+
+type ObjectId = Types.ObjectId;
+type T = Record<string, any>;
+
+@Injectable()
+export class NoticeService {
+	constructor(
+		@InjectModel('Notice')
+		private readonly noticeModel: Model<any>,
+	) {}
+
+	/** USER: notice ro'yxati (faqat ACTIVE) */
+	public async getNotices(input: NoticesInquiry): Promise<{ list: Notice[]; total: number }> {
+    const page = input.page ?? 1;
+    const limit = input.limit ?? 10;
+
+    const match: Record<string, any> = {};
+
+    if (input.noticeCategory) {
+        match.noticeCategory = input.noticeCategory;
+    }
+
+    const list = await this.noticeModel
+        .find(match)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean();
+
+    const total = await this.noticeModel.countDocuments(match);
+
+    // === GraphQL DTO ga mos formatga o'tkazish ===
+    const shapedList = list.map((doc) => ({
+        _id: doc._id.toString(),
+        noticeCategory: doc.noticeCategory,
+        noticeStatus: doc.noticeStatus,
+        noticeTitle: doc.noticeTitle,
+        noticeContent: doc.noticeContent,
+        memberId: doc.memberId?.toString(),
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+    }));
+
+    return { list: shapedList, total };
+	}
+
+	/** ADMIN: notice ro'yxati (status bo'yicha ham filter) */
+	async getAdminNotices(input: NoticesInquiry) {
+		const page = input.page ?? 1;
+		const limit = input.limit ?? 10;
+
+		const match: T = {};
+
+		if (input.noticeStatus) {
+			match.noticeStatus = input.noticeStatus;
+		}
+		if (input.noticeCategory) {
+			match.noticeCategory = input.noticeCategory;
+		}
+		if (input.searchText) {
+			const regex = new RegExp(input.searchText, 'i');
+			match.$or = [{ noticeTitle: regex }, { noticeContent: regex }];
+		}
+
+		const [list, total] = await Promise.all([
+			this.noticeModel
+				.find(match)
+				.sort({ createdAt: -1 })
+				.skip((page - 1) * limit)
+				.limit(limit),
+			this.noticeModel.countDocuments(match),
+		]);
+
+		return { list, total };
+	}
+
+	/** ADMIN: notice create */
+	async createNotice(adminId: ObjectId, input: CreateNoticeInput) {
+		const doc = await this.noticeModel.create({
+			noticeCategory: input.noticeCategory,
+			noticeTitle: input.noticeTitle,
+			noticeContent: input.noticeContent,
+			noticeStatus: NoticeStatus.ACTIVE,
+			memberId: adminId,
+		});
+
+		return doc;
+	}
+}

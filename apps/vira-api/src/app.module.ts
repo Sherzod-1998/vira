@@ -12,9 +12,8 @@ import { SocketModule } from './socket/socket.module';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(), //.env
+		ConfigModule.forRoot(),
 		GraphQLModule.forRoot({
-			//GraphQL
 			driver: ApolloDriver,
 			playground: true,
 			uploads: false,
@@ -34,6 +33,6 @@ import { SocketModule } from './socket/socket.module';
 		SocketModule,
 	],
 	controllers: [AppController],
-	providers: [AppService, AppResolver],
+	providers: [AppService, AppResolver], // ❗ NoticeService/Resolver NI OLIB TASHLADIK
 })
 export class AppModule {}

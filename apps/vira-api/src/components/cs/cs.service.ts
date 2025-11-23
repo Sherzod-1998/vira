@@ -9,7 +9,7 @@ import {
 	CreateCsInquiryInput,
 	MyCsInquiryInquiry,
 } from '../../libs/dto/cs/cs-inquiry.input';
-import { CsStatus } from '../../libs/enums/notice.enum';
+import { CsStatus } from '../../libs/enums/cs.enum';
 
 type T = Record<string, any>;
 

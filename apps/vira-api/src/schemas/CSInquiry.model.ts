@@ -1,6 +1,6 @@
 // apps/vira-api/src/schemas/CSInquiry.model.ts
 import { Schema } from 'mongoose';
-import { CsStatus } from '../libs/enums/notice.enum';
+import { CsStatus } from '../libs/enums/cs.enum';
 
 const CsInquirySchema = new Schema(
 	{
