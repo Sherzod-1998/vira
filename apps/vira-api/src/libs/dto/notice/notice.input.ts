@@ -1,5 +1,5 @@
 // libs/dto/notice/notice.input.ts
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, ID, InputType, Int } from '@nestjs/graphql';
 import { NoticeCategory, NoticeStatus } from '../../enums/notice.enum';
 
 @InputType()
@@ -33,4 +33,10 @@ export class CreateNoticeInput {
 
 	@Field({ nullable: true })
 	isTop?: boolean; // agar keyin kerak bo'lsa, hozircha ishlatmasak ham bo‘ladi
+}
+
+@InputType()
+export class DeleteNoticeInput {
+	@Field(() => ID)
+	noticeId: string;
 }

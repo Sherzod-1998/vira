@@ -38,6 +38,9 @@ export class CsInquiry {
 
 	@Field()
 	updatedAt: Date;
+
+	@Field(() => String, { nullable: true })
+	memberNick?: string;
 }
 
 @ObjectType()

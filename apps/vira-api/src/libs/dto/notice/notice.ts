@@ -1,6 +1,7 @@
 // libs/dto/notice/notice.ts
 import { Field, ObjectType, Int, registerEnumType } from '@nestjs/graphql';
 import { NoticeCategory, NoticeStatus } from '../../enums/notice.enum';
+import { Member } from '../member/member';
 
 registerEnumType(NoticeCategory, { name: 'NoticeCategory' });
 registerEnumType(NoticeStatus, { name: 'NoticeStatus' });
@@ -30,6 +31,12 @@ export class Notice {
 
 	@Field()
 	updatedAt: Date;
+
+	@Field(() => String, { nullable: true })
+	memberNick?: string;
+
+	@Field(() => Member, { nullable: true })
+	member?: Member;
 }
 
 @ObjectType()

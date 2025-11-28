@@ -4,11 +4,13 @@ import NoticeSchema from '../../schemas/Notice.model';
 import { NoticeService } from './notice.service';
 import { NoticeResolver } from './notice.resolver';
 import { AuthModule } from '../auth/auth.module';
+import { MemberModule } from '../member/member.module';
 
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'Notice', schema: NoticeSchema }]),
 		AuthModule, // <-- MUAMMONI HAL QILADI
+		MemberModule,
 	],
 	providers: [NoticeService, NoticeResolver],
 	exports: [NoticeService],

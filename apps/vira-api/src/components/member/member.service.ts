@@ -208,4 +208,8 @@ export class MemberService {
 			)
 			.exec();
 	}
+
+	public async findMemberById(memberId: ObjectId | string): Promise<Member | null> {
+		return this.memberModel.findById(memberId).exec();
+	}
 }

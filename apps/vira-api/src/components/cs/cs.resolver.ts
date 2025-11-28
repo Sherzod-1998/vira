@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, Resolver, ResolveField } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
 
@@ -19,10 +19,14 @@ import {
 	AnswerCsInquiryInput,
 } from '../../libs/dto/cs/cs-inquiry.input';
 import { CsInquiry, CsInquiryList } from '../../libs/dto/cs/cs-inquiry';
+import { MemberService } from '../member/member.service';
 
-@Resolver()
+@Resolver(() => CsInquiry)
 export class CsResolver {
-	constructor(private readonly csService: CsService) {}
+	constructor(
+		private readonly csService: CsService,
+		private readonly memberService: MemberService,
+	) {}
 
 	/** USER: CS so'rov yaratish **/
 	@UseGuards(AuthGuard)
@@ -84,5 +88,14 @@ export class CsResolver {
 	): Promise<any> {
 		console.log('Mutation: answerCsInquiry');
 		return await this.csService.answerCsInquiry(adminId, input);
+	}
+
+	// 🔹 USER NICKNAME FIELD RESOLVER
+	@ResolveField(() => String, { name: 'memberNick', nullable: true })
+	async resolveMemberNick(@Parent() inquiry: CsInquiry): Promise<string | null> {
+		if (!inquiry.userId) return null;
+
+		const member = await this.memberService.findMemberById(inquiry.userId as any);
+		return member?.memberNick ?? null; // sizdagi member modelga qarab: member?.mb_nick bo'lishi ham mumkin
 	}
 }
