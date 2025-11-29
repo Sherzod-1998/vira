@@ -1,9 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, PipelineStage } from 'mongoose';
-import { MemberService } from '../member/member.service';
-import { ProductService } from '../product/product.service';
-import { BoardArticleService } from '../board-article/board-article.service';
 import { CommentInput, CommentsInquiry } from '../../libs/dto/comment/comment.input';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { CommentGroup, CommentStatus } from '../../libs/enums/comment.enum';
@@ -13,6 +11,12 @@ import { T } from '../../libs/types/common';
 import { lookupMember } from '../../libs/config';
 import { Member } from '../../libs/dto/member/member';
 
+import { MemberService } from '../member/member.service';
+import { ProductService } from '../product/product.service';
+import { BoardArticleService } from '../board-article/board-article.service';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+
 @Injectable()
 export class CommentService {
 	constructor(
@@ -21,12 +25,13 @@ export class CommentService {
 		private readonly memberService: MemberService,
 		private readonly productService: ProductService,
 		private readonly boardArticleService: BoardArticleService,
+		private readonly notificationService: NotificationService,
 	) {}
 
 	public async createComment(memberId: ObjectId, input: CommentInput): Promise<Comment> {
 		input.memberId = memberId;
 
-		let result = null;
+		let result: Comment | null = null;
 		try {
 			result = await this.commentModel.create(input);
 		} catch (err) {
@@ -34,6 +39,7 @@ export class CommentService {
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
 
+		// 🔢 Statistika yangilash
 		switch (input.commentGroup) {
 			case CommentGroup.PRODUCT:
 				await this.productService.productStatsEditor({
@@ -59,6 +65,63 @@ export class CommentService {
 		}
 
 		if (!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
+
+		// 🔔 COMMENT NOTIFICATION
+		try {
+			let receiverId: string | null = null;
+			let notificationGroup: NotificationGroup | null = null;
+
+			const refId = input.commentRefId as unknown as ObjectId;
+			const refIdStr = (refId as any).toString();
+			const authorIdStr = memberId.toString();
+
+			if (input.commentGroup === CommentGroup.PRODUCT) {
+				// 🛒 Product egasiga
+				const product = await (this.productService as any).getProduct(null, refId);
+				if (product?.memberId) {
+					receiverId = (product.memberId as any).toString();
+					notificationGroup = NotificationGroup.PRODUCT;
+				}
+			} else if (input.commentGroup === CommentGroup.ARTICLE) {
+				// 📝 Article egasiga – sizdagi mavjud metodga qarab
+				let article: any = null;
+
+				if (typeof (this.boardArticleService as any).getBoardArticle === 'function') {
+					// agar sizda shunaqa signatura bo‘lsa: getBoardArticle(memberId, articleId)
+					article = await (this.boardArticleService as any).getBoardArticle(null, refId);
+				} else if (typeof (this.boardArticleService as any).getBoardArticleById === 'function') {
+					article = await (this.boardArticleService as any).getBoardArticleById(refId);
+				}
+
+				if (article?.memberId) {
+					receiverId = article.memberId.toString();
+					notificationGroup = NotificationGroup.ARTICLE;
+				}
+			} else if (input.commentGroup === CommentGroup.MEMBER) {
+				// 👤 Profilga yozilgan comment
+				receiverId = refIdStr;
+				notificationGroup = NotificationGroup.MEMBER;
+			}
+
+			// O'ziga-o'zi comment qilsa – notification yubormaymiz
+			if (receiverId && receiverId !== authorIdStr && notificationGroup) {
+				await this.notificationService.createNotification({
+					notificationType: NotificationType.COMMENT,
+					notificationGroup,
+					notificationTitle: 'New comment received',
+					notificationDesc:
+						// bu yerda backenddagi field nomiga moslab o‘zgartiring
+						(result as any).commentContent ?? (result as any).commentDesc ?? 'Someone commented on your post.',
+					authorId: authorIdStr,
+					receiverId,
+					productId: notificationGroup === NotificationGroup.PRODUCT ? refIdStr : undefined,
+					articleId: notificationGroup === NotificationGroup.ARTICLE ? refIdStr : undefined,
+				});
+			}
+		} catch (err) {
+			console.log('Notification error on createComment:', err?.message ?? err);
+		}
+
 		return result;
 	}
 
@@ -95,7 +158,7 @@ export class CommentService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							//meliked
+							// memberData
 							lookupMember,
 							{ $unwind: '$memberData' },
 						],
@@ -114,6 +177,7 @@ export class CommentService {
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 		return result;
 	}
+
 	async getCommentsSummary(): Promise<{
 		total: number;
 		recentCommenters: { id: string; avatarUrl?: string }[];
@@ -138,14 +202,12 @@ export class CommentService {
 					as: 'member',
 				},
 			},
-			// ⬇️ Shu yerda unwind va preserveNullAndEmptyArrays: false
 			{
 				$unwind: {
 					path: '$member',
-					preserveNullAndEmptyArrays: false, // memberi yo‘q bo‘lganlar tashlab yuboriladi
+					preserveNullAndEmptyArrays: false,
 				},
 			},
-			// endi vaqt bo‘yicha again sort va limit
 			{ $sort: { lastCommentAt: -1 } },
 			{ $limit: 3 },
 			{

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { CommentResolver } from './comment.resolver';
 import { CommentService } from './comment.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -8,6 +8,9 @@ import { MemberModule } from '../member/member.module';
 import { ProductModule } from '../product/product.module';
 import { BoardArticleModule } from '../board-article/board-article.module';
 import MemberSchema from '../../schemas/Member.model';
+
+// 🔔 NotificationModule import
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
 	imports: [
@@ -22,6 +25,7 @@ import MemberSchema from '../../schemas/Member.model';
 		MemberModule,
 		ProductModule,
 		BoardArticleModule,
+		forwardRef(() => NotificationModule), // 🔔 qo‘shildi
 	],
 	providers: [CommentResolver, CommentService],
 })

@@ -49,7 +49,7 @@ export class ProductService {
 		}
 	}
 
-	public async getProduct(memberId: ObjectId, productId: ObjectId): Promise<Product> {
+	public async getProduct(memberId: ObjectId | null, productId: ObjectId): Promise<Product> {
 		const search: T = {
 			_id: productId,
 			productStatus: ProductStatus.ACTIVE,
@@ -66,7 +66,7 @@ export class ProductService {
 				targetProduct.productViews++;
 			}
 
-			//meLiked
+			// meLiked
 			const likeInput = { memberId: memberId, likeRefId: productId, likeGroup: LikeGroup.PRODUCT };
 			targetProduct.meLiked = await this.likeService.checkLikeExistence(likeInput);
 		}
