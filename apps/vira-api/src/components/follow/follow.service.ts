@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Follower, Followers, Following, Followings } from '../../libs/dto/follow/follow';
 import { Model, ObjectId } from 'mongoose';
@@ -13,11 +13,18 @@ import {
 	lookupFollowingData,
 } from '../../libs/config';
 
+// 🔔 Qo'shimcha importlar
+import { NotificationService } from '../notification/notification.service';
+import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
+
 @Injectable()
 export class FollowService {
 	constructor(
 		@InjectModel('Follow') private readonly followModel: Model<Follower | Following>,
 		private readonly memberService: MemberService,
+
+		@Inject(forwardRef(() => NotificationService))
+		private readonly notificationService: NotificationService, // 🔔 shu orqali notification chaqiramiz
 	) {}
 
 	public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
@@ -25,13 +32,26 @@ export class FollowService {
 			throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED);
 		}
 
+		// Target memberni tekshirib olamiz
 		const targetMember = await this.memberService.getMember(null, followingId);
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
+		// Follow yozuvi yaratish
 		const result = await this.registerSubscription(followerId, followingId);
 
+		// Statistikani yangilash
 		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 });
 		await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: 1 });
+
+		// 🔔 FOLLOW NOTIFICATION yuborish
+		await this.notificationService.createNotification({
+			notificationType: NotificationType.FOLLOW,
+			notificationGroup: NotificationGroup.MEMBER,
+			notificationTitle: 'You have a new follower', // CreateNotificationInput da majburiy
+			notificationDesc: 'Someone started following you.',
+			authorId: followerId.toString(), // follow qilayotgan user
+			receiverId: followingId.toString(), // qabul qilayotgan user
+		});
 
 		return result;
 	}
@@ -81,9 +101,9 @@ export class FollowService {
 						list: [
 							{ $skip: (page - 1) * limit },
 							{ $limit: limit },
-							//meLiked
+							// meLiked
 							lookupAuthMemberLiked(memberId, '$followingId'),
-							//meFollowed
+							// meFollowed
 							lookupAuthMemberFollowed({ followerId: memberId, followingId: '$followingId' }),
 							lookupFollowingData,
 							{ $unwind: '$followingData' },
@@ -113,9 +133,9 @@ export class FollowService {
 						list: [
 							{ $skip: (page - 1) * limit },
 							{ $limit: limit },
-							//meLiked
+							// meLiked
 							lookupAuthMemberLiked(memberId, '$followerId'),
-							//meFollowed
+							// meFollowed
 							lookupAuthMemberFollowed({ followerId: memberId, followingId: '$followerId' }),
 
 							lookupFollowerData,

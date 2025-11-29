@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -9,11 +10,9 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module'; // 🔹 YANGI IMPORT
 
 @Module({
-	imports: [
-		MongooseModule.forFeature([{ name: 'CsInquiry', schema: CsInquirySchema }]),
-		AuthModule,
-		MemberModule, // 🔹 YANGI MODUL QO'SHILDI
-	],
+	imports: [MongooseModule.forFeature([{ name: 'CsInquiry', schema: CsInquirySchema }]), 
+	AuthModule, 
+	MemberModule],
 	providers: [CsService, CsResolver],
 	exports: [CsService],
 })
