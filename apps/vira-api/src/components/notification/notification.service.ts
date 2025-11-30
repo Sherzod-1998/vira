@@ -53,7 +53,7 @@ export class NotificationService {
 			this.notificationModel.countDocuments(filter),
 		]);
 
-		// 🔧 TypeScriptni tinchlantiramiz: avval unknown, keyin Notification[]
+		
 		const list = listRaw as unknown as Notification[];
 
 		return { list, total, page, limit };

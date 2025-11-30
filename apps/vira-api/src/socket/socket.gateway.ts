@@ -8,6 +8,8 @@ import { Logger } from '@nestjs/common';
 @WebSocketGateway({ transports: ['websocket'], secure: false })
 export class SocketGateway implements OnGatewayInit {
 	private logger: Logger = new Logger('SocketGateway');
+
+	// client ↔ member map
 	private clients = new Map<WebSocket, any>();
 
 	constructor(private authService: AuthService) {}
@@ -23,27 +25,75 @@ export class SocketGateway implements OnGatewayInit {
 		try {
 			const parseUrl = url.parse(req.url, true);
 			const { token } = parseUrl.query;
+			if (!token) return null;
 			return await this.authService.verifyToken(String(token));
-		} catch {
+		} catch (e) {
+			this.logger.error('getAuth error', e);
 			return null;
 		}
+	}
+
+	/** 🔥 Hamma clientlarga event yuborish */
+	private broadcast(message: any) {
+		const json = JSON.stringify(message);
+		this.clients.forEach((_member, socket) => {
+			if (socket.readyState === WebSocket.OPEN) {
+				socket.send(json);
+			}
+		});
 	}
 
 	async handleConnection(client: WebSocket, req: any) {
 		const member = await this.getAuth(req);
 		this.clients.set(client, member);
 
-		this.logger.verbose(`Connected: ${member?.memberNick ?? 'Guest'}`);
+		this.logger.verbose(`Connected: ${member?.memberNick ?? 'Guest'}. Total: ${this.clients.size}`);
+
+		this.broadcast({
+			event: 'info',
+			totalClients: this.clients.size,
+			memberData: member,
+			action: 'connect',
+		});
+
+		client.on('message', (raw: WebSocket.RawData) => {
+			try {
+				const data = JSON.parse(raw.toString());
+				this.logger.verbose(`Message from ${member?.memberNick ?? 'Guest'}: ${raw.toString()}`);
+
+				if (data.event === 'message') {
+					this.broadcast({
+						event: 'message',
+						text: data.data,
+						memberData: member,
+					});
+				}
+			} catch (e) {
+				this.logger.error('message parse error', e);
+			}
+		});
+
+		client.on('close', () => this.handleDisconnect(client));
+		client.on('error', () => this.handleDisconnect(client));
 	}
 
 	handleDisconnect(client: WebSocket) {
+		const member = this.clients.get(client);
 		this.clients.delete(client);
+
+		this.logger.verbose(`Disconnected: ${member?.memberNick ?? 'Guest'}. Total: ${this.clients.size}`);
+
+		this.broadcast({
+			event: 'info',
+			totalClients: this.clients.size,
+			memberData: member,
+			action: 'disconnect',
+		});
 	}
 
-	/* 🔥 Send event to specific member */
 	emitToMember(memberId: string, message: any) {
 		this.clients.forEach((member, socket) => {
-			if (member?._id == memberId) {
+			if (member?._id == memberId && socket.readyState === WebSocket.OPEN) {
 				socket.send(JSON.stringify(message));
 			}
 		});

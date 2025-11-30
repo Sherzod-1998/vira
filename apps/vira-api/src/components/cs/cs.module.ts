@@ -7,7 +7,7 @@ import { CsResolver } from './cs.resolver';
 import CsInquirySchema from '../../schemas/CSInquiry.model';
 
 import { AuthModule } from '../auth/auth.module';
-import { MemberModule } from '../member/member.module'; // 🔹 YANGI IMPORT
+import { MemberModule } from '../member/member.module';
 
 @Module({
 	imports: [MongooseModule.forFeature([{ name: 'CsInquiry', schema: CsInquirySchema }]), 

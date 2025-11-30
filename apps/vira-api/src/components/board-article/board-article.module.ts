@@ -8,7 +8,6 @@ import { ViewModule } from '../view/view.module';
 import { LikeModule } from '../like/like.module';
 import { BoardArticleResolver } from './board-article.resolver';
 
-
 @Module({
 	imports: [
 		MongooseModule.forFeature([

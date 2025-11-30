@@ -17,7 +17,7 @@ import { NotificationModule } from '../notification/notification.module';
 		]),
 		AuthModule,
 		MemberModule,
-		forwardRef(() => NotificationModule), // 🔥 aynan shu qo'shildi
+		forwardRef(() => NotificationModule),
 	],
 	providers: [FollowResolver, FollowService],
 	exports: [FollowModule],

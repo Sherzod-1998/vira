@@ -12,8 +12,6 @@ import {
 	lookupFollowerData,
 	lookupFollowingData,
 } from '../../libs/config';
-
-// 🔔 Qo'shimcha importlar
 import { NotificationService } from '../notification/notification.service';
 import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
 
@@ -32,25 +30,21 @@ export class FollowService {
 			throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED);
 		}
 
-		// Target memberni tekshirib olamiz
 		const targetMember = await this.memberService.getMember(null, followingId);
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		// Follow yozuvi yaratish
 		const result = await this.registerSubscription(followerId, followingId);
 
-		// Statistikani yangilash
 		await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 });
 		await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: 1 });
 
-		// 🔔 FOLLOW NOTIFICATION yuborish
 		await this.notificationService.createNotification({
 			notificationType: NotificationType.FOLLOW,
 			notificationGroup: NotificationGroup.MEMBER,
-			notificationTitle: 'You have a new follower', // CreateNotificationInput da majburiy
+			notificationTitle: 'You have a new follower',
 			notificationDesc: 'Someone started following you.',
-			authorId: followerId.toString(), // follow qilayotgan user
-			receiverId: followingId.toString(), // qabul qilayotgan user
+			authorId: followerId.toString(),
+			receiverId: followingId.toString(),
 		});
 
 		return result;

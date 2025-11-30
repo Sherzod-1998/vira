@@ -58,11 +58,9 @@ export class ViewService {
 			])
 			.exec();
 
-		// console.log('data:', data);
 		const result: Products = { list: [], metaCounter: data[0].metaCounter };
 		result.list = data[0].list.map((ele) => ele.visitedProduct);
 
-		// console.log('result:', result);
 		return result;
 	}
 }

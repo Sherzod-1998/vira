@@ -20,9 +20,6 @@ export class CsService {
 		private readonly csInquiryModel: Model<any>,
 	) {}
 
-	/**
-	 * USER: yangi CS savol yaratish
-	 */
 	public async createCsInquiry(userId: ObjectId, input: CreateCsInquiryInput): Promise<any> {
 		const doc = await this.csInquiryModel.create({
 			userId,
@@ -34,9 +31,6 @@ export class CsService {
 		return doc;
 	}
 
-	/**
-	 * USER: o'zining CS savollari ro'yxati (pagination bilan)
-	 */
 	public async getMyCsInquiries(userId: ObjectId, input: MyCsInquiryInquiry): Promise<any> {
 		const page = input.page ?? 1;
 		const limit = input.limit ?? 10;
@@ -60,9 +54,6 @@ export class CsService {
 		return { list, total };
 	}
 
-	/**
-	 * ADMIN: barcha CS savollar ro'yxati (filter + search + pagination)
-	 */
 	public async getAdminCsInquiries(input: AdminCsInquiryInquiry): Promise<any> {
 		const page = input.page ?? 1;
 		const limit = input.limit ?? 10;
@@ -91,9 +82,6 @@ export class CsService {
 		return { list, total };
 	}
 
-	/**
-	 * ADMIN: bitta CS savolga javob yozish
-	 */
 	public async answerCsInquiry(adminId: ObjectId, input: AnswerCsInquiryInput): Promise<any> {
 		const doc = await this.csInquiryModel.findById(input.inquiryId);
 
@@ -111,9 +99,6 @@ export class CsService {
 		return doc;
 	}
 
-	/**
-	 * USER: bitta CS savol detalini ko'rish
-	 */
 	public async getMyCsInquiryDetail(userId: ObjectId, id: string): Promise<any> {
 		const doc = await this.csInquiryModel
 			.findOne({

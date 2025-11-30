@@ -28,7 +28,6 @@ export class CsResolver {
 		private readonly memberService: MemberService,
 	) {}
 
-	/** USER: CS so'rov yaratish **/
 	@UseGuards(AuthGuard)
 	@Mutation(() => CsInquiry)
 	public async createCsInquiry(
@@ -39,7 +38,6 @@ export class CsResolver {
 		return await this.csService.createCsInquiry(memberId, input);
 	}
 
-	/** USER: o'z CS so'rovlari ro'yxatini olish (mypage taraf) **/
 	@UseGuards(AuthGuard)
 	@Query(() => CsInquiryList)
 	public async getMyCsInquiries(
@@ -65,7 +63,6 @@ export class CsResolver {
 		return await this.csService.getMyCsInquiryDetail(memberId, inquiryId);
 	}
 
-	/** ADMIN: barcha CS so'rovlari ro'yxati **/
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => CsInquiryList)
@@ -78,7 +75,6 @@ export class CsResolver {
 		return await this.csService.getAdminCsInquiries(input);
 	}
 
-	/** ADMIN: CS so'rovga javob yozish **/
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => CsInquiry)
@@ -90,12 +86,11 @@ export class CsResolver {
 		return await this.csService.answerCsInquiry(adminId, input);
 	}
 
-	// 🔹 USER NICKNAME FIELD RESOLVER
 	@ResolveField(() => String, { name: 'memberNick', nullable: true })
 	async resolveMemberNick(@Parent() inquiry: CsInquiry): Promise<string | null> {
 		if (!inquiry.userId) return null;
 
 		const member = await this.memberService.findMemberById(inquiry.userId as any);
-		return member?.memberNick ?? null; // sizdagi member modelga qarab: member?.mb_nick bo'lishi ham mumkin
+		return member?.memberNick ?? null;
 	}
 }

@@ -1,4 +1,3 @@
-// libs/dto/notice/notice.ts
 import { Field, ObjectType, Int, registerEnumType } from '@nestjs/graphql';
 import { NoticeCategory, NoticeStatus } from '../../enums/notice.enum';
 import { Member } from '../member/member';

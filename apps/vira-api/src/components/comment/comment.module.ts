@@ -9,7 +9,6 @@ import { ProductModule } from '../product/product.module';
 import { BoardArticleModule } from '../board-article/board-article.module';
 import MemberSchema from '../../schemas/Member.model';
 
-// 🔔 NotificationModule import
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
@@ -25,7 +24,7 @@ import { NotificationModule } from '../notification/notification.module';
 		MemberModule,
 		ProductModule,
 		BoardArticleModule,
-		forwardRef(() => NotificationModule), // 🔔 qo‘shildi
+		forwardRef(() => NotificationModule),
 	],
 	providers: [CommentResolver, CommentService],
 })

@@ -7,11 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module';
 
 @Module({
-	imports: [
-		MongooseModule.forFeature([{ name: 'Notice', schema: NoticeSchema }]),
-		AuthModule, // <-- MUAMMONI HAL QILADI
-		MemberModule,
-	],
+	imports: [MongooseModule.forFeature([{ name: 'Notice', schema: NoticeSchema }]), AuthModule, MemberModule],
 	providers: [NoticeService, NoticeResolver],
 	exports: [NoticeService],
 })

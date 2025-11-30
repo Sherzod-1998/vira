@@ -38,8 +38,7 @@ export class CommentService {
 			console.log('Error, Service.model:', err.message);
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
-
-		// 🔢 Statistika yangilash
+		// Stats update
 		switch (input.commentGroup) {
 			case CommentGroup.PRODUCT:
 				await this.productService.productStatsEditor({
@@ -76,14 +75,12 @@ export class CommentService {
 			const authorIdStr = memberId.toString();
 
 			if (input.commentGroup === CommentGroup.PRODUCT) {
-				// 🛒 Product egasiga
 				const product = await (this.productService as any).getProduct(null, refId);
 				if (product?.memberId) {
 					receiverId = (product.memberId as any).toString();
 					notificationGroup = NotificationGroup.PRODUCT;
 				}
 			} else if (input.commentGroup === CommentGroup.ARTICLE) {
-				// 📝 Article egasiga – sizdagi mavjud metodga qarab
 				let article: any = null;
 
 				if (typeof (this.boardArticleService as any).getBoardArticle === 'function') {
@@ -98,19 +95,16 @@ export class CommentService {
 					notificationGroup = NotificationGroup.ARTICLE;
 				}
 			} else if (input.commentGroup === CommentGroup.MEMBER) {
-				// 👤 Profilga yozilgan comment
 				receiverId = refIdStr;
 				notificationGroup = NotificationGroup.MEMBER;
 			}
 
-			// O'ziga-o'zi comment qilsa – notification yubormaymiz
 			if (receiverId && receiverId !== authorIdStr && notificationGroup) {
 				await this.notificationService.createNotification({
 					notificationType: NotificationType.COMMENT,
 					notificationGroup,
 					notificationTitle: 'New comment received',
 					notificationDesc:
-						// bu yerda backenddagi field nomiga moslab o‘zgartiring
 						(result as any).commentContent ?? (result as any).commentDesc ?? 'Someone commented on your post.',
 					authorId: authorIdStr,
 					receiverId,
@@ -193,7 +187,7 @@ export class CommentService {
 					lastCommentAt: { $first: '$createdAt' },
 				},
 			},
-			// members bilan join
+
 			{
 				$lookup: {
 					from: 'members',

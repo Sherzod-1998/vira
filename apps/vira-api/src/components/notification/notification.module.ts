@@ -11,7 +11,7 @@ import { AuthModule } from '../auth/auth.module';
 	imports: [
 		MongooseModule.forFeature([{ name: 'Notification', schema: NotificationSchema }]),
 		forwardRef(() => SocketModule),
-		AuthModule, // 🔥 WithoutGuard ichidagi AuthService shu yerdan keladi
+		AuthModule,
 	],
 	providers: [NotificationResolver, NotificationService],
 	exports: [NotificationService],

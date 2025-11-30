@@ -16,7 +16,6 @@ export class NoticeService {
 		private readonly noticeModel: Model<any>,
 	) {}
 
-	/** USER: notice ro'yxati (faqat ACTIVE) */
 	public async getNotices(input: NoticesInquiry): Promise<{ list: Notice[]; total: number }> {
 		const page = input.page ?? 1;
 		const limit = input.limit ?? 10;
@@ -51,7 +50,6 @@ export class NoticeService {
 		return { list: shapedList, total };
 	}
 
-	/** ADMIN: notice ro'yxati (status bo'yicha ham filter) */
 	async getAdminNotices(input: NoticesInquiry) {
 		const page = input.page ?? 1;
 		const limit = input.limit ?? 10;
@@ -81,7 +79,6 @@ export class NoticeService {
 		return { list, total };
 	}
 
-	/** ADMIN: notice create */
 	async createNotice(adminId: ObjectId, input: CreateNoticeInput) {
 		const doc = await this.noticeModel.create({
 			noticeCategory: input.noticeCategory,

@@ -1,4 +1,3 @@
-// libs/dto/notice/notice.input.ts
 import { Field, ID, InputType, Int } from '@nestjs/graphql';
 import { NoticeCategory, NoticeStatus } from '../../enums/notice.enum';
 
@@ -17,7 +16,7 @@ export class NoticesInquiry {
 	noticeCategory?: NoticeCategory;
 
 	@Field(() => NoticeStatus, { nullable: true })
-	noticeStatus?: NoticeStatus; // admin tarafda filter uchun
+	noticeStatus?: NoticeStatus;
 }
 
 @InputType()
@@ -32,7 +31,7 @@ export class CreateNoticeInput {
 	noticeContent: string;
 
 	@Field({ nullable: true })
-	isTop?: boolean; // agar keyin kerak bo'lsa, hozircha ishlatmasak ham bo‘ladi
+	isTop?: boolean;
 }
 
 @InputType()

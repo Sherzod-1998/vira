@@ -1,6 +1,3 @@
-// apps/vira-api/src/components/auth/auth.module.ts (yo bo‘lmasa o'zingizda qayerda bo'lsa)
-
-// 🔽 guardlarni import qilamiz
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';

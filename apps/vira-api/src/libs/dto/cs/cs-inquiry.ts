@@ -1,8 +1,8 @@
-// libs/dto/cs/cs-inquiry.ts
+
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { CsStatus } from '../../enums/cs.enum';
 
-// GraphQL enum registration
+
 registerEnumType(CsStatus, {
 	name: 'CsStatus',
 });

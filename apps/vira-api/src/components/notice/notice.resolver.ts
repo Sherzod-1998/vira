@@ -24,14 +24,13 @@ export class NoticeResolver {
 		private readonly memberService: MemberService,
 	) {}
 
-	/** USER: Notice ro'yxati */
 	@UseGuards(WithoutGuard)
 	@Query(() => NoticeList)
 	async getNotices(@Args('input') input: NoticesInquiry): Promise<NoticeList> {
 		return this.noticeService.getNotices(input);
 	}
 
-	/** ADMIN: Notice ro'yxati */
+
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => NoticeList)
@@ -39,7 +38,7 @@ export class NoticeResolver {
 		return this.noticeService.getAdminNotices(input);
 	}
 
-	/** ADMIN: Notice yaratish */
+
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => Notice)
@@ -61,12 +60,12 @@ export class NoticeResolver {
 		return this.noticeService.deleteNotice(noticeId);
 	}
 
-	// 🔹 MEMBER NICKNAME FIELD RESOLVER
+
 	@ResolveField(() => String, { name: 'memberNick', nullable: true })
 	async resolveMemberNick(@Parent() notice: Notice): Promise<string | null> {
 		if (!notice.memberId) return null;
 
 		const member = await this.memberService.findMemberById(notice.memberId as any);
-		return member?.memberNick ?? null; // sizda field nomi qanday bo'lsa shunga moslang
+		return member?.memberNick ?? null;
 	}
 }
