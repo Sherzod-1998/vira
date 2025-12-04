@@ -13,7 +13,7 @@
     "start:dev": "nest start --watch",
     "start:dev:batch": "nest start vira-batch --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "NODE_ENV=production node dist/apps/vira-api/main",
+    "start:prod": "node dist/apps/vira-api/main.js",
     "start:prod:batch": "node dist/apps/vira-batch/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
