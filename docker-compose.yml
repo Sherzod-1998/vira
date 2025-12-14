@@ -1,0 +1,38 @@
+version: "3.3"
+
+services:
+  vira-api:
+    container_name: vira-api
+    restart: always
+    image: node:20.10.0
+    ports:
+      - 4001:3007
+    volumes:
+      - ./:/usr/src/vira
+    working_dir: /usr/src/vira
+
+    networks:
+      - monorepo-network
+
+    # FOR PRODUCTION
+    command: bash -c "npm install && npm run build && npm run start:prod"
+
+  vira-batch:
+    container_name: vira-batch
+    restart: unless-stopped
+    image: node:20.10.0
+    ports:
+      - 4002:3008
+    volumes:
+      - ./:/usr/src/vira
+    working_dir: /usr/src/vira
+
+    networks:
+      - monorepo-network
+
+    # FOR PRODUCTION
+    command: bash -c "npm install && npm run build && npm run start:prod"
+
+networks:
+  monorepo-network:
+    driver: bridge
