@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   vira-api:
     container_name: vira-api
