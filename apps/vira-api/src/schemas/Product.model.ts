@@ -71,6 +71,16 @@ const ProductSchema = new Schema(
 			type: String,
 		},
 
+		productBarter: {
+			type: Boolean,
+			default: false,
+		},
+
+		productRent: {
+			type: Boolean,
+			default: false,
+		},
+
 		memberId: {
 			type: Schema.Types.ObjectId,
 			required: true,

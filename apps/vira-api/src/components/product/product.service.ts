@@ -85,6 +85,8 @@ export class ProductService {
 
 		if (productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
 		else if (productStatus === ProductStatus.DELETE) deletedAt = moment().toDate();
+		if (soldAt) input.soldAt = soldAt;
+		if (deletedAt) input.deletedAt = deletedAt;
 
 		const result = await this.productModel
 			.findOneAndUpdate(search, input, {
@@ -288,6 +290,8 @@ export class ProductService {
 
 		if (productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
 		else if (productStatus === ProductStatus.DELETE) deletedAt = moment().toDate();
+		if (soldAt) input.soldAt = soldAt;
+		if (deletedAt) input.deletedAt = deletedAt;
 
 		const result = await this.productModel
 			.findOneAndUpdate(search, input, {

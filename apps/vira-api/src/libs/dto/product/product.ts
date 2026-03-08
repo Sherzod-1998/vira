@@ -48,6 +48,12 @@ export class Product {
 	@Field(() => String, { nullable: true })
 	productDesc?: string;
 
+	@Field(() => Boolean, { nullable: true })
+	productBarter?: boolean;
+
+	@Field(() => Boolean, { nullable: true })
+	productRent?: boolean;
+
 	@Field(() => String)
 	memberId: ObjectId;
 

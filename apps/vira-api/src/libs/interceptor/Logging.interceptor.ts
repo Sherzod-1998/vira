@@ -10,29 +10,20 @@ export class LoggingInterceptor implements NestInterceptor {
 	public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
 		const recordTime = Date.now();
 		const requestType = context.getType<GqlContextType>();
-		// console.log('Before...');
-
-		if (requestType === 'http') {
-			/** Develop if needed */
-		} else if (requestType === 'graphql') {
-			/** (1) Print Request */
-
+		if (requestType === 'graphql') {
 			const gqlContext = GqlExecutionContext.create(context);
-			this.logger.log(`${this.stringify(gqlContext.getContext().req.body)}`, 'REQUEST');
-
-			/** (2) Errorrs handling via GraphQl */
-
-			/** (3) If No Errors, giving response below */
+			const body = gqlContext.getContext().req?.body ?? {};
+			const operationName = body.operationName ?? 'anonymous';
+			this.logger.log(operationName, 'REQUEST');
 
 			return next.handle().pipe(
-				tap((context) => {
+				tap(() => {
 					const responseTime = Date.now() - recordTime;
-					this.logger.log(`${(this, this.stringify(context))} - ${responseTime}ms \n\n`, 'RESPONSE');
+					this.logger.log(`${operationName} - ${responseTime}ms`, 'RESPONSE');
 				}),
 			);
 		}
-	}
-	private stringify(context: ExecutionContext): string {
-		return JSON.stringify(context).slice(0, 75);
+
+		return next.handle();
 	}
 }

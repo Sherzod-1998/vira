@@ -48,6 +48,14 @@ export class ProductUpdate {
 	@Field(() => String, { nullable: true })
 	productDesc?: string;
 
+	@IsOptional()
+	@Field(() => Boolean, { nullable: true })
+	productBarter?: boolean;
+
+	@IsOptional()
+	@Field(() => Boolean, { nullable: true })
+	productRent?: boolean;
+
 	soldAt?: Date;
 
 	deletedAt?: Date;

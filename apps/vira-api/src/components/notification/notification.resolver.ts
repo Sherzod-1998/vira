@@ -5,34 +5,39 @@ import { GetMyNotificationsInput, CreateNotificationInput } from '../../libs/dto
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
 import { UseGuards } from '@nestjs/common';
-import { WithoutGuard } from '../auth/guards/without.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { MemberType } from '../../libs/enums/member.enum';
 
 @Resolver(() => Notification)
 export class NotificationResolver {
 	constructor(private readonly notificationService: NotificationService) {}
 
 	/* 🔔 GET LIST */
-	@UseGuards(WithoutGuard)
+	@UseGuards(AuthGuard)
 	@Query(() => NotificationListResult)
 	async getMyNotifications(@Args('input') input: GetMyNotificationsInput, @AuthMember('_id') memberId: ObjectId) {
 		return this.notificationService.getMyNotifications(memberId, input);
 	}
 
 	/* 🔔 GET UNREAD COUNT */
-	@UseGuards(WithoutGuard)
+	@UseGuards(AuthGuard)
 	@Query(() => Int)
 	async getMyUnreadNotificationsCount(@AuthMember('_id') memberId: ObjectId) {
 		return this.notificationService.getMyUnreadCount(memberId);
 	}
 
 	/* 🔔 CREATE */
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
 	@Mutation(() => Notification)
 	async createNotification(@Args('input') input: CreateNotificationInput) {
 		return this.notificationService.createNotification(input);
 	}
 
 	/* 🔔 MARK ONE */
-	@UseGuards(WithoutGuard)
+	@UseGuards(AuthGuard)
 	@Mutation(() => Boolean)
 	async markNotificationRead(
 		@Args('notificationId', { type: () => ID }) notificationId: string,
@@ -42,7 +47,7 @@ export class NotificationResolver {
 	}
 
 	/* 🔔 MARK ALL */
-	@UseGuards(WithoutGuard)
+	@UseGuards(AuthGuard)
 	@Mutation(() => Boolean)
 	async markAllNotificationsRead(@AuthMember('_id') memberId: ObjectId) {
 		return this.notificationService.markAllNotificationsRead(memberId);

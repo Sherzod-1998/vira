@@ -4,6 +4,7 @@ import { Member } from '../../libs/dto/member/member';
 import { JwtService } from '@nestjs/jwt';
 import { T } from '../../libs/types/common';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { MemberStatus, MemberType, MemberAuthType } from '../../libs/enums/member.enum';
 
 @Injectable()
 export class AuthService {
@@ -19,11 +20,14 @@ export class AuthService {
 	}
 
 	public async createToken(member: Member): Promise<string> {
-		const payload: T = {};
-		Object.keys(member['_doc'] ? member['_doc'] : member).forEach((key) => {
-			payload[key] = member[key];
-			delete payload.memberPassword;
-		});
+		const source: T = member['_doc'] ? member['_doc'] : member;
+		const payload: T = {
+			_id: source._id,
+			memberNick: source.memberNick,
+			memberType: source.memberType as MemberType,
+			memberStatus: source.memberStatus as MemberStatus,
+			memberAuthType: source.memberAuthType as MemberAuthType,
+		};
 		return await this.jwtService.signAsync(payload);
 	}
 

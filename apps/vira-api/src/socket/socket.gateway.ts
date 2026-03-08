@@ -17,6 +17,14 @@ export class SocketGateway implements OnGatewayInit {
 	@WebSocketServer()
 	server: Server;
 
+	private toPublicMember(member: any) {
+		if (!member) return null;
+		return {
+			_id: member._id,
+			memberNick: member.memberNick,
+		};
+	}
+
 	afterInit() {
 		this.logger.verbose(`WebSocket initialized`);
 	}
@@ -52,7 +60,7 @@ export class SocketGateway implements OnGatewayInit {
 		this.broadcast({
 			event: 'info',
 			totalClients: this.clients.size,
-			memberData: member,
+			memberData: this.toPublicMember(member),
 			action: 'connect',
 		});
 
@@ -65,7 +73,7 @@ export class SocketGateway implements OnGatewayInit {
 					this.broadcast({
 						event: 'message',
 						text: data.data,
-						memberData: member,
+						memberData: this.toPublicMember(member),
 					});
 				}
 			} catch (e) {
@@ -86,7 +94,7 @@ export class SocketGateway implements OnGatewayInit {
 		this.broadcast({
 			event: 'info',
 			totalClients: this.clients.size,
-			memberData: member,
+			memberData: this.toPublicMember(member),
 			action: 'disconnect',
 		});
 	}

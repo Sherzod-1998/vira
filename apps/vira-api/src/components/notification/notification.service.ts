@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types, isValidObjectId } from 'mongoose';
 import { CreateNotificationInput, GetMyNotificationsInput } from '../../libs/dto/notification/notification.input';
@@ -19,16 +19,20 @@ export class NotificationService {
 	/* 🔔 CREATE + REAL-TIME SEND */
 	async createNotification(input: CreateNotificationInput) {
 		const template = this.generateTemplate(input);
+		const authorId = this.toObjectId(input.authorId, 'authorId');
+		const receiverId = this.toObjectId(input.receiverId, 'receiverId');
+		const productId = input.productId ? this.toObjectId(input.productId, 'productId') : undefined;
+		const articleId = input.articleId ? this.toObjectId(input.articleId, 'articleId') : undefined;
 
 		const doc = await this.notificationModel.create({
 			...input,
 			notificationTitle: template.title,
 			notificationDesc: template.desc,
 			notificationStatus: NotificationStatus.WAIT,
-			authorId: new Types.ObjectId(input.authorId),
-			receiverId: new Types.ObjectId(input.receiverId),
-			productId: input.productId ? new Types.ObjectId(input.productId) : undefined,
-			articleId: input.articleId ? new Types.ObjectId(input.articleId) : undefined,
+			authorId,
+			receiverId,
+			productId,
+			articleId,
 		});
 
 		// 🔥 Send realtime event to receiver
@@ -69,8 +73,9 @@ export class NotificationService {
 
 	/* 🔔 READ ONE */
 	async markNotificationRead(memberId: ObjectId, notificationId: string): Promise<boolean> {
+		const _id = this.toObjectId(notificationId, 'notificationId');
 		const res = await this.notificationModel.updateOne(
-			{ _id: new Types.ObjectId(notificationId), receiverId: memberId },
+			{ _id, receiverId: memberId },
 			{ $set: { notificationStatus: NotificationStatus.READ } },
 		);
 
@@ -107,5 +112,12 @@ export class NotificationService {
 				};
 		}
 		return { title: 'Notification', desc: '' };
+	}
+
+	private toObjectId(value: string, fieldName: string): Types.ObjectId {
+		if (!isValidObjectId(value)) {
+			throw new BadRequestException(`${fieldName} is invalid`);
+		}
+		return new Types.ObjectId(value);
 	}
 }
