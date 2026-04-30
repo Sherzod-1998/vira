@@ -43,4 +43,25 @@ describe('NotificationService', () => {
 		);
 		expect(notificationModel.updateOne).not.toHaveBeenCalled();
 	});
+
+	it('preserves caller supplied title and description when creating notifications', async () => {
+		const { service, notificationModel } = setup();
+		const receiverId = new Types.ObjectId().toHexString();
+		const authorId = new Types.ObjectId().toHexString();
+
+		await service.createNotification({
+			notificationType: NotificationType.COMMENT,
+			notificationGroup: NotificationGroup.PRODUCT,
+			notificationTitle: 'Custom title',
+			notificationDesc: 'Custom description',
+			authorId,
+			receiverId,
+			productId: new Types.ObjectId().toHexString(),
+		});
+
+		expect(notificationModel.create).toHaveBeenCalledTimes(1);
+		const [payload] = notificationModel.create.mock.calls[0];
+		expect(payload.notificationTitle).toBe('Custom title');
+		expect(payload.notificationDesc).toBe('Custom description');
+	});
 });

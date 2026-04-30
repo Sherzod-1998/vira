@@ -30,14 +30,12 @@ export class NoticeResolver {
 		return this.noticeService.getNotices(input);
 	}
 
-
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => NoticeList)
 	async getAdminNotices(@Args('input') input: NoticesInquiry): Promise<NoticeList> {
 		return this.noticeService.getAdminNotices(input);
 	}
-
 
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
@@ -59,7 +57,6 @@ export class NoticeResolver {
 	async deleteNotice(@Args('noticeId', { type: () => ID }) noticeId: string): Promise<boolean> {
 		return this.noticeService.deleteNotice(noticeId);
 	}
-
 
 	@ResolveField(() => String, { name: 'memberNick', nullable: true })
 	async resolveMemberNick(@Parent() notice: Notice): Promise<string | null> {

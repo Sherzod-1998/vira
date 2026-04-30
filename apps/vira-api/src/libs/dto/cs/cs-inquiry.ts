@@ -1,7 +1,5 @@
-
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { CsStatus } from '../../enums/cs.enum';
-
 
 registerEnumType(CsStatus, {
 	name: 'CsStatus',
