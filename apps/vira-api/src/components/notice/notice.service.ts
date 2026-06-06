@@ -20,7 +20,9 @@ export class NoticeService {
 		const page = input.page ?? 1;
 		const limit = input.limit ?? 10;
 
-		const match: Record<string, any> = {};
+		const match: Record<string, any> = {
+			noticeStatus: NoticeStatus.ACTIVE,
+		};
 
 		if (input.noticeCategory) {
 			match.noticeCategory = input.noticeCategory;

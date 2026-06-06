@@ -26,8 +26,8 @@ export class NotificationService {
 
 		const doc = await this.notificationModel.create({
 			...input,
-			notificationTitle: template.title,
-			notificationDesc: template.desc,
+			notificationTitle: input.notificationTitle ?? template.title,
+			notificationDesc: input.notificationDesc ?? template.desc,
 			notificationStatus: NotificationStatus.WAIT,
 			authorId,
 			receiverId,
@@ -57,7 +57,6 @@ export class NotificationService {
 			this.notificationModel.countDocuments(filter),
 		]);
 
-		
 		const list = listRaw as unknown as Notification[];
 
 		return { list, total, page, limit };

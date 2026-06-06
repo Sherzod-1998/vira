@@ -83,4 +83,24 @@ describe('ProductService status timestamp updates', () => {
 			modifier: -1,
 		});
 	});
+
+	it('getProducts should not crash when search is omitted', async () => {
+		const aggregateExec = jest.fn().mockResolvedValue([{ list: [], metaCounter: [{ total: 0 }] }]);
+		const productModel = {
+			aggregate: jest.fn(() => ({ exec: aggregateExec })),
+		} as any;
+
+		const service = new ProductService(productModel, {} as any, {} as any, {} as any);
+
+		await expect(
+			service.getProducts(
+				'm1' as any,
+				{
+					page: 1,
+					limit: 10,
+				} as any,
+			),
+		).resolves.toEqual({ list: [], metaCounter: [{ total: 0 }] });
+		expect(productModel.aggregate).toHaveBeenCalledTimes(1);
+	});
 });

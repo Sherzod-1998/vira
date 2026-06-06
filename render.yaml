@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: vira-api
+    runtime: node
+    plan: free
+    branch: develop
+    buildCommand: npm ci && npm run build:api
+    startCommand: npm run start:prod
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 20.10.0
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_PROD
+        sync: false
+      - key: SECRET_TOKEN
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false

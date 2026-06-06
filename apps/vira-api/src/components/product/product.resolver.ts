@@ -23,7 +23,7 @@ import { MemberAuthType, MemberType } from '../../libs/enums/member.enum';
 
 @Resolver()
 export class ProductResolver {
-	constructor(private readonly productService: ProductService) { }
+	constructor(private readonly productService: ProductService) {}
 
 	@Roles(MemberType.SELLER)
 	@UseGuards(RolesGuard)

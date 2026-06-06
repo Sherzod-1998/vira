@@ -29,10 +29,15 @@ export class MemberService {
 	) {}
 
 	public async signup(input: MemberInput): Promise<Member> {
-		//Hash password
-		input.memberPassword = await this.authService.hashPassword(input.memberPassword);
+		const createInput: MemberInput = {
+			...input,
+			memberType: MemberType.USER,
+			memberStatus: MemberStatus.ACTIVE,
+		} as MemberInput & { memberStatus: MemberStatus };
+		// Hash password and ignore caller-controlled privilege fields.
+		createInput.memberPassword = await this.authService.hashPassword(createInput.memberPassword);
 		try {
-			const result = await this.memberModel.create(input);
+			const result = await this.memberModel.create(createInput);
 			// Authentication via TOKEN
 			result.accessToken = await this.authService.createToken(result);
 			return result;
@@ -64,13 +69,20 @@ export class MemberService {
 	}
 
 	public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Member> {
+		const updateInput: MemberUpdate = { ...input };
+		delete updateInput.memberType;
+		delete updateInput.memberStatus;
+		if (updateInput.memberPassword) {
+			updateInput.memberPassword = await this.authService.hashPassword(updateInput.memberPassword);
+		}
+
 		const result: Member = await this.memberModel
 			.findOneAndUpdate(
 				{
 					_id: memberId,
 					memberStatus: MemberStatus.ACTIVE,
 				},
-				input,
+				updateInput,
 				{ new: true },
 			)
 			.exec();
@@ -191,7 +203,14 @@ export class MemberService {
 	}
 
 	public async updateMemberByAdmin(input: MemberUpdate): Promise<Member> {
-		const result: Member = await this.memberModel.findOneAndUpdate({ _id: input._id }, input, { new: true }).exec();
+		const updateInput: MemberUpdate = { ...input };
+		if (updateInput.memberPassword) {
+			updateInput.memberPassword = await this.authService.hashPassword(updateInput.memberPassword);
+		}
+
+		const result: Member = await this.memberModel
+			.findOneAndUpdate({ _id: input._id }, updateInput, { new: true })
+			.exec();
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		return result;
 	}
