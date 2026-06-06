@@ -97,3 +97,30 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# Vira API
+
+## Render deployment
+
+The repository includes a `render.yaml` Blueprint for the `vira-api` NestJS
+application.
+
+1. Push the `develop` branch to GitHub.
+2. In Render, create a new Blueprint and select this repository.
+3. Set `MONGO_PROD` to the production MongoDB connection string.
+4. Set `CORS_ORIGINS` to the Vercel frontend URL, for example
+   `https://your-project.vercel.app`.
+
+The API endpoints will use these URLs:
+
+```text
+HTTP: https://your-api.onrender.com
+GraphQL: https://your-api.onrender.com/graphql
+WebSocket: wss://your-api.onrender.com
+```
+
+The free Render filesystem is ephemeral. Files stored under `uploads/` can be
+lost when the service restarts or redeploys, so production image uploads should
+be moved to an object storage service such as Cloudinary or S3.
+
+The `vira-batch` scheduler is not included in the free Blueprint. Deploy it as a
+separate worker when scheduled ranking updates are needed.
