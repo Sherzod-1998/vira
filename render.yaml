@@ -5,14 +5,12 @@ services:
     plan: free
     repo: https://github.com/Sherzod-1998/vira
     branch: master
-    buildCommand: npm ci && npm run build:api
+    buildCommand: npm ci --include=dev && npm run build:api
     startCommand: npm run start:prod
     healthCheckPath: /
     envVars:
       - key: NODE_VERSION
         value: 20.10.0
-      - key: NODE_ENV
-        value: production
       - key: MONGO_PROD
         sync: false
       - key: SECRET_TOKEN
