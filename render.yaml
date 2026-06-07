@@ -3,6 +3,7 @@ services:
     name: vira-api
     runtime: node
     plan: free
+    repo: https://github.com/Sherzod-1998/vira
     branch: master
     buildCommand: npm ci && npm run build:api
     startCommand: npm run start:prod
