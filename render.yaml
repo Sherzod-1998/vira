@@ -3,7 +3,7 @@ services:
     name: vira-api
     runtime: node
     plan: free
-    branch: develop
+    branch: master
     buildCommand: npm ci && npm run build:api
     startCommand: npm run start:prod
     healthCheckPath: /
