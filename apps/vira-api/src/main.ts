@@ -5,6 +5,7 @@ import { LoggingInterceptor } from './libs/interceptor/Logging.interceptor';
 import { graphqlUploadExpress } from 'graphql-upload';
 import * as express from 'express';
 import { WsAdapter } from '@nestjs/platform-ws';
+import { getCloudinaryAssetUrl, isCloudinaryConfigured } from './libs/cloudinary';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -19,7 +20,13 @@ async function bootstrap() {
 		credentials: true,
 	});
 	app.use(graphqlUploadExpress({ maxFileSize: 15000000, maxFiles: 10 }));
-	app.use('/uploads', express.static('./uploads'));
+	if (isCloudinaryConfigured()) {
+		app.use('/uploads', (request, response) => {
+			response.redirect(302, getCloudinaryAssetUrl(request.path));
+		});
+	} else {
+		app.use('/uploads', express.static('./uploads'));
+	}
 
 	app.useWebSocketAdapter(new WsAdapter(app));
 	await app.listen(process.env.PORT ?? process.env.PORT_API ?? 3000, '0.0.0.0');

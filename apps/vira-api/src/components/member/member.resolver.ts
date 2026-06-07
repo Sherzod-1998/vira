@@ -16,6 +16,7 @@ import { GraphQLUpload, FileUpload } from 'graphql-upload';
 import { createWriteStream } from 'fs';
 import { Message } from '../../libs/enums/common.enum';
 import { MemberType } from '../../libs/enums/member.enum';
+import { isCloudinaryConfigured, normalizeUploadTarget, uploadImage } from '../../libs/cloudinary';
 
 @Resolver()
 export class MemberResolver {
@@ -126,16 +127,19 @@ export class MemberResolver {
 		const validMime = validMimeTypes.includes(mimetype);
 		if (!validMime) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
 
+		target = normalizeUploadTarget(target);
 		const imageName = getSerialForImage(filename);
 		const url = `uploads/${target}/${imageName}`;
 		const stream = createReadStream();
 
-		const result = await new Promise((resolve, reject) => {
-			stream
-				.pipe(createWriteStream(url))
-				.on('finish', async () => resolve(true))
-				.on('error', () => reject(false));
-		});
+		const result = isCloudinaryConfigured()
+			? await uploadImage(stream, target, imageName)
+			: await new Promise((resolve, reject) => {
+					stream
+						.pipe(createWriteStream(url))
+						.on('finish', async () => resolve(true))
+						.on('error', () => reject(false));
+				});
 		if (!result) throw new Error(Message.UPLOAD_FAILED);
 
 		return url;
@@ -150,6 +154,7 @@ export class MemberResolver {
 	): Promise<string[]> {
 		console.log('Mutation: imagesUploader');
 
+		target = normalizeUploadTarget(target);
 		const uploadedImages = [];
 		const promisedList = files.map(async (img: Promise<FileUpload>, index: number): Promise<Promise<void>> => {
 			try {
@@ -162,12 +167,14 @@ export class MemberResolver {
 				const url = `uploads/${target}/${imageName}`;
 				const stream = createReadStream();
 
-				const result = await new Promise((resolve, reject) => {
-					stream
-						.pipe(createWriteStream(url))
-						.on('finish', () => resolve(true))
-						.on('error', () => reject(false));
-				});
+				const result = isCloudinaryConfigured()
+					? await uploadImage(stream, target, imageName)
+					: await new Promise((resolve, reject) => {
+							stream
+								.pipe(createWriteStream(url))
+								.on('finish', () => resolve(true))
+								.on('error', () => reject(false));
+						});
 				if (!result) throw new Error(Message.UPLOAD_FAILED);
 
 				uploadedImages[index] = url;
