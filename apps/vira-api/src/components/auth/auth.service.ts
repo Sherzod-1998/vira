@@ -36,4 +36,11 @@ export class AuthService {
 		member._id = shapeIntoMongoObjectId(member._id);
 		return member;
 	}
+
+	public async getGoogleUserInfo(accessToken: string): Promise<{ sub: string; email: string; name: string; picture: string }> {
+		const res = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`);
+		const data = await res.json();
+		if (!data.sub || data.error) throw new Error('Invalid Google access token');
+		return data;
+	}
 }

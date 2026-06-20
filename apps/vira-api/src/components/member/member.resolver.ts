@@ -33,6 +33,12 @@ export class MemberResolver {
 		return await this.memberService.login(input);
 	}
 
+	@Mutation(() => Member)
+	public async googleLogin(@Args('accessToken') accessToken: string): Promise<Member> {
+		console.log('Mutation: googleLogin');
+		return await this.memberService.googleLogin(accessToken);
+	}
+
 	// Authenticated
 	@UseGuards(AuthGuard)
 	@Mutation(() => Member)
