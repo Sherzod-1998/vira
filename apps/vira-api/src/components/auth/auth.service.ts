@@ -27,6 +27,10 @@ export class AuthService {
 			memberType: source.memberType as MemberType,
 			memberStatus: source.memberStatus as MemberStatus,
 			memberAuthType: source.memberAuthType as MemberAuthType,
+			memberImage: source.memberImage ?? '',
+			memberPhone: source.memberPhone ?? '',
+			memberFullName: source.memberFullName ?? '',
+			memberAddress: source.memberAddress ?? '',
 		};
 		return await this.jwtService.signAsync(payload);
 	}
