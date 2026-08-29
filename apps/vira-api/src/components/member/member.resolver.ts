@@ -66,6 +66,16 @@ export class MemberResolver {
 		return `Hi ${authMember.memberNick}, you are ${authMember.memberType} (memberId: ${authMember._id})`;
 	}
 
+	// Any authenticated member, regardless of role — used by the frontend to verify
+	// a caller's role server-side (e.g. gating the admin UI) without trusting a
+	// client-decoded JWT payload.
+	@UseGuards(AuthGuard)
+	@Query(() => String)
+	public async checkMyRole(@AuthMember('memberType') memberType: string): Promise<string> {
+		console.log('Query: checkMyRole');
+		return memberType;
+	}
+
 	@UseGuards(WithoutGuard)
 	@Query(() => Member)
 	public async getMember(@Args('memberId') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Member> {
