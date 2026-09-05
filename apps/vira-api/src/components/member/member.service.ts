@@ -14,7 +14,7 @@ import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
 import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 import { lookupAuthMemberLiked } from '../../libs/config';
-import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
+import { MemberStatus, MemberType, MemberAuthType } from '../../libs/enums/member.enum';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable()
@@ -66,6 +66,51 @@ export class MemberService {
 		response.accessToken = await this.authService.createToken(response);
 
 		return response;
+	}
+
+	public async googleLogin(accessToken: string): Promise<Member> {
+		const googleUser = await this.authService.getGoogleUserInfo(accessToken);
+		const { sub, email, name, picture } = googleUser;
+
+		// Find existing member by Google sub stored in memberPhone
+		let member = await this.memberModel
+			.findOne({ memberPhone: sub, memberAuthType: MemberAuthType.GOOGLE })
+			.exec();
+
+		if (!member) {
+			// Generate nick from email prefix
+			const emailPrefix = email ? email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(0, 10) : '';
+			let memberNick = emailPrefix.length >= 3 ? emailPrefix : sub.slice(0, 10);
+			memberNick = memberNick.slice(0, 12);
+
+			// Ensure nick uniqueness
+			const nickExists = await this.memberModel.findOne({ memberNick }).exec();
+			if (nickExists) {
+				memberNick = (memberNick.slice(0, 8) + sub.slice(0, 4)).slice(0, 12);
+			}
+
+			try {
+				member = await this.memberModel.create({
+					memberNick,
+					memberType: MemberType.USER,
+					memberStatus: MemberStatus.ACTIVE,
+					memberAuthType: MemberAuthType.GOOGLE,
+					memberPhone: sub,
+					memberFullName: name || '',
+					memberImage: picture || '',
+				});
+			} catch (err) {
+				console.log('Google signup err:', err.message);
+				throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
+			}
+		}
+
+		if (member.memberStatus === MemberStatus.BLOCK) {
+			throw new InternalServerErrorException(Message.BLOCKED_USER);
+		}
+
+		member.accessToken = await this.authService.createToken(member);
+		return member;
 	}
 
 	public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Member> {

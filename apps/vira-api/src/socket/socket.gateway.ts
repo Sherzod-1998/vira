@@ -52,6 +52,10 @@ export class SocketGateway implements OnGatewayInit {
 	}
 
 	async handleConnection(client: WebSocket, req: any) {
+		// Legacy fallback: a token in the connection URL query string still works
+		// (older clients, or a rollback), but the frontend now prefers sending the
+		// token in a post-connect 'auth' message instead, so it never lands in a
+		// URL (proxy/server access logs, browser history).
 		const member = await this.getAuth(req);
 		this.clients.set(client, member);
 
@@ -67,13 +71,31 @@ export class SocketGateway implements OnGatewayInit {
 		client.on('message', (raw: WebSocket.RawData) => {
 			try {
 				const data = JSON.parse(raw.toString());
-				this.logger.verbose(`Message from ${member?.memberNick ?? 'Guest'}: ${raw.toString()}`);
+				const currentMember = this.clients.get(client);
+				this.logger.verbose(`Message from ${currentMember?.memberNick ?? 'Guest'}: ${raw.toString()}`);
+
+				if (data.event === 'auth' && data.token) {
+					this.authService
+						.verifyToken(String(data.token))
+						.then((verifiedMember) => {
+							this.clients.set(client, verifiedMember);
+							this.logger.verbose(`Authenticated via message: ${verifiedMember?.memberNick}`);
+							this.broadcast({
+								event: 'info',
+								totalClients: this.clients.size,
+								memberData: this.toPublicMember(verifiedMember),
+								action: 'connect',
+							});
+						})
+						.catch((e) => this.logger.error('auth message verify error', e));
+					return;
+				}
 
 				if (data.event === 'message') {
 					this.broadcast({
 						event: 'message',
 						text: data.data,
-						memberData: this.toPublicMember(member),
+						memberData: this.toPublicMember(this.clients.get(client)),
 					});
 				}
 			} catch (e) {

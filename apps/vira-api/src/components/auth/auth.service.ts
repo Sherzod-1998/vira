@@ -27,6 +27,10 @@ export class AuthService {
 			memberType: source.memberType as MemberType,
 			memberStatus: source.memberStatus as MemberStatus,
 			memberAuthType: source.memberAuthType as MemberAuthType,
+			memberImage: source.memberImage ?? '',
+			memberPhone: source.memberPhone ?? '',
+			memberFullName: source.memberFullName ?? '',
+			memberAddress: source.memberAddress ?? '',
 		};
 		return await this.jwtService.signAsync(payload);
 	}
@@ -35,5 +39,12 @@ export class AuthService {
 		const member = await this.jwtService.verifyAsync(token);
 		member._id = shapeIntoMongoObjectId(member._id);
 		return member;
+	}
+
+	public async getGoogleUserInfo(accessToken: string): Promise<{ sub: string; email: string; name: string; picture: string }> {
+		const res = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`);
+		const data = await res.json();
+		if (!data.sub || data.error) throw new Error('Invalid Google access token');
+		return data;
 	}
 }
