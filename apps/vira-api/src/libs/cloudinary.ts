@@ -20,11 +20,7 @@ export const getCloudinaryAssetUrl = (assetPath: string): string => {
 	return `https://res.cloudinary.com/${cloudName}/image/upload/${CLOUDINARY_FOLDER}/${normalizedPath}`;
 };
 
-export const uploadImage = async (
-	stream: Readable,
-	target: string,
-	imageName: string,
-): Promise<UploadApiResponse> => {
+export const uploadImage = async (stream: Readable, target: string, imageName: string): Promise<UploadApiResponse> => {
 	const publicId = imageName.replace(/\.[^.]+$/, '');
 
 	return await new Promise((resolve, reject) => {

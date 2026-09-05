@@ -73,13 +73,16 @@ export class MemberService {
 		const { sub, email, name, picture } = googleUser;
 
 		// Find existing member by Google sub stored in memberPhone
-		let member = await this.memberModel
-			.findOne({ memberPhone: sub, memberAuthType: MemberAuthType.GOOGLE })
-			.exec();
+		let member = await this.memberModel.findOne({ memberPhone: sub, memberAuthType: MemberAuthType.GOOGLE }).exec();
 
 		if (!member) {
 			// Generate nick from email prefix
-			const emailPrefix = email ? email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(0, 10) : '';
+			const emailPrefix = email
+				? email
+						.split('@')[0]
+						.replace(/[^a-zA-Z0-9]/g, '')
+						.slice(0, 10)
+				: '';
 			let memberNick = emailPrefix.length >= 3 ? emailPrefix : sub.slice(0, 10);
 			memberNick = memberNick.slice(0, 12);
 
