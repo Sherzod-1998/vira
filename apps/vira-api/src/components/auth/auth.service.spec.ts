@@ -25,6 +25,10 @@ describe('AuthService', () => {
 			memberType: member.memberType,
 			memberStatus: member.memberStatus,
 			memberAuthType: member.memberAuthType,
+			memberImage: '',
+			memberPhone: member.memberPhone,
+			memberFullName: '',
+			memberAddress: '',
 		});
 	});
 });
