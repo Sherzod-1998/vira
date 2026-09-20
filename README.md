@@ -4,6 +4,7 @@ The backend for [Vira](https://github.com/Sherzod-1998/vira-next), a fine
 jewelry marketplace: a NestJS GraphQL API with MongoDB, JWT auth, and a raw
 WebSocket gateway for chat/notifications.
 
+**Live API:** https://api.uzvira.uz · **Live site:** https://uzvira.uz
 **Frontend repo:** https://github.com/Sherzod-1998/vira-next
 
 ## Features
